@@ -4,13 +4,11 @@ using Inventory_Managment_System.Domain.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Inventory_Managment_System.Application.Services
 {
     internal class InventoryService : IInventoryService
     {
-
         private readonly List<Product> _products = new();
         private int _nextId = 1;
 
@@ -35,6 +33,44 @@ namespace Inventory_Managment_System.Application.Services
         public IReadOnlyList<Product> GetAllProducts()
         {
             return _products.AsReadOnly();
+        }
+
+        public void UpdateProduct(int id, decimal price, int quantity)
+        {
+            Product productToUpdate = SearchProductsById(id); 
+
+            Product product = new(
+                productToUpdate.Name,
+                productToUpdate.Description,
+                price,
+                productToUpdate.SKU,
+                quantity);
+            _products.RemoveAll(p => p.Id == id);
+            product.AssignId(productToUpdate.Id);
+            _products.Add(product);
+        }
+
+        public IReadOnlyList<Product> SearchProductsByName(string name)
+        {
+            return _products
+                .Where(product =>
+                    product.Name.Contains(
+                        name,
+                        StringComparison.OrdinalIgnoreCase))
+                .ToList();
+        }
+
+        public Product? SearchProductsBySKU(string sku)
+        {
+            return _products.FirstOrDefault(product =>
+                product.SKU.Equals(
+                    sku,
+                    StringComparison.OrdinalIgnoreCase));
+        }
+        public Product? SearchProductsById(int id)
+        {
+            return _products.FirstOrDefault(product =>
+                product.Id == id);
         }
     }
 }
