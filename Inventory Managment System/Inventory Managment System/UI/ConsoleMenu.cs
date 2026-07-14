@@ -1,96 +1,179 @@
 ﻿using Inventory_Managment_System.Application.Interfaces;
 using Inventory_Managment_System.Domain.Models;
+using Inventory_Managment_System.UI.Interfaces;
+using Inventory_Managment_System.UI.Models;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Inventory_Managment_System.UI
 {
-
     public class ConsoleMenu
     {
         private readonly IInventoryService _inventoryService;
+        private readonly IConsoleInput _consoleInput;
 
-        public ConsoleMenu(IInventoryService inventoryService)
+        public ConsoleMenu(
+            IInventoryService inventoryService,
+            IConsoleInput consoleInput)
         {
-            _inventoryService = inventoryService;
+            _inventoryService = inventoryService
+                ?? throw new ArgumentNullException(
+                    nameof(inventoryService));
+
+            _consoleInput = consoleInput
+                ?? throw new ArgumentNullException(
+                    nameof(consoleInput));
         }
 
         public void Run()
+        {
+            Dictionary<string, MenuOption> mainOptions = new()
+            {
+                {
+                    "1",
+                    new MenuOption(
+                        "Add Product",
+                        AddProduct)
+                },
+                {
+                    "2",
+                    new MenuOption(
+                        "View Products",
+                        ShowProducts)
+                },
+                {
+                    "3",
+                    new MenuOption(
+                        "Search Products",
+                        RunSearchMenu)
+                },
+                {
+                    "4",
+                    new MenuOption(
+                        "Update Products",
+                        UpdateProduct)
+                }
+            };
+
+            RunMenu(
+                title: "Inventory Management System",
+                options: mainOptions,
+                exitOption: "5",
+                exitDescription: "Exit");
+        }
+
+        private static void RunMenu(
+            string title,
+            Dictionary<string, MenuOption> options,
+            string exitOption,
+            string exitDescription)
         {
             bool running = true;
 
             while (running)
             {
-                ShowOptions();
+                ShowMenu(
+                    title,
+                    options,
+                    exitOption,
+                    exitDescription);
 
-                string option = Console.ReadLine() ?? string.Empty;
+                string selectedOption =
+                    Console.ReadLine()?.Trim() ?? string.Empty;
 
-                switch (option)
+                if (selectedOption == exitOption)
                 {
-                    case "1":
-                        AddProduct();
-                        break;
+                    running = false;
+                    continue;
+                }
 
-                    case "2":
-                        ShowProducts();
-                        break;
+                if (!options.TryGetValue(
+                        selectedOption,
+                        out MenuOption? menuOption))
+                {
+                    Console.WriteLine("Invalid option.");
+                    continue;
+                }
 
-                    case "3":
-                        running = false;
-                        break;
-
-                    default:
-                        Console.WriteLine("Invalid option.");
-                        break;
+                try
+                {
+                    menuOption.Execute();
+                }
+                catch (Exception exception)
+                {
+                    Console.WriteLine(
+                        $"Error: {exception.Message}");
                 }
             }
         }
 
-        private static void ShowOptions()
+        private static void ShowMenu(
+            string title,
+            Dictionary<string, MenuOption> options,
+            string exitOption,
+            string exitDescription)
         {
             Console.WriteLine();
-            Console.WriteLine("Inventory Management System");
-            Console.WriteLine("1. Add Product");
-            Console.WriteLine("2. View Products");
-            Console.WriteLine("3. Exit");
+            Console.WriteLine(title);
+
+            foreach (KeyValuePair<string, MenuOption> option in options)
+            {
+                Console.WriteLine(
+                    $"{option.Key}. {option.Value.Description}");
+            }
+
+            Console.WriteLine(
+                $"{exitOption}. {exitDescription}");
+
             Console.Write("Choose an option: ");
         }
 
         private void AddProduct()
         {
-            try
-            {
-                Console.Write("Name: ");
-                string name = Console.ReadLine();
+            string name =
+                _consoleInput.ReadRequiredString("Name: ");
 
-                Console.Write("Description: ");
-                string description = Console.ReadLine() ?? string.Empty;
+            string description =
+                _consoleInput.ReadOptionalString("Description: ");
 
-                Console.Write("SKU: ");
-                string sku = Console.ReadLine();
+            string sku =
+                _consoleInput.ReadRequiredString("SKU: ");
 
-                Console.Write("Price: ");
-                decimal price = ReadDecimal();
+            decimal price =
+                _consoleInput.ReadDecimal("Price: ");
 
-                Console.Write("Quantity: ");
-                int quantity = ReadInteger();
+            int quantity =
+                _consoleInput.ReadInteger("Quantity: ");
 
-                Product product = new(
-                    name,
-                    description,
-                    price,
-                    sku,
-                    quantity);
+            Product product = new(
+                name,
+                description,
+                price,
+                sku,
+                quantity);
 
-                _inventoryService.AddProduct(product);
+            _inventoryService.AddProduct(product);
 
-                Console.WriteLine("Product added successfully.");
-            }
-            catch (Exception exception)
-            {
-                Console.WriteLine($"Error: {exception.Message}");
-            }
+            Console.WriteLine(
+                "Product added successfully.");
+        }
+
+        private void UpdateProduct()
+        {
+            ShowProducts();
+
+            int id =
+                _consoleInput.ReadInteger("Select a product by Id: ");
+            decimal price =
+                _consoleInput.ReadDecimal("Price: ");
+
+            int quantity =
+                _consoleInput.ReadInteger("Quantity: ");
+
+            _inventoryService.UpdateProduct(id, price, quantity);
+
+            Console.WriteLine(
+                "Product updated successfully.");
         }
 
         private void ShowProducts()
@@ -98,48 +181,94 @@ namespace Inventory_Managment_System.UI
             IReadOnlyList<Product> products =
                 _inventoryService.GetAllProducts();
 
-            if (products.Count == 0)
+            ShowProductList(products);
+        }
+
+        private void RunSearchMenu()
+        {
+            Dictionary<string, MenuOption> searchOptions = new()
             {
-                Console.WriteLine("No products registered.");
+                {
+                    "1",
+                    new MenuOption(
+                        "Search By Name",
+                        SearchByName)
+                },
+                {
+                    "2",
+                    new MenuOption(
+                        "Search By SKU",
+                        SearchBySku)
+                }
+            };
+
+            RunMenu(
+                title: "Search Options",
+                options: searchOptions,
+                exitOption: "3",
+                exitDescription: "Back Home");
+        }
+
+        private void SearchByName()
+        {
+            string name =
+                _consoleInput.ReadRequiredString(
+                    "Enter the product name: ");
+
+            IReadOnlyList<Product> products =
+                _inventoryService.SearchProductsByName(name);
+
+            ShowProductList(products);
+        }
+
+        private void SearchBySku()
+        {
+            string sku =
+                _consoleInput.ReadRequiredString(
+                    "Enter the product SKU: ");
+
+            Product? product =
+                _inventoryService.SearchProductsBySKU(sku);
+
+            if (product is null)
+            {
+                Console.WriteLine(
+                    "No product was found with that SKU.");
+
                 return;
             }
 
+            ShowProduct(product);
+        }
+
+        private static void ShowProductList(
+            IReadOnlyList<Product> products)
+        {
+            if (products.Count == 0)
+            {
+                Console.WriteLine("No products found.");
+                return;
+            }
+
+            Console.WriteLine();
+            Console.WriteLine(
+                "ID | Name | Description | SKU | Price | Quantity");
+
             foreach (Product product in products)
             {
-                Console.WriteLine(
-                    $"{product.Id} | " +
-                    $"{product.Name} | " +
-                    $"{product.Description}" +
-                    $"{product.SKU} | " +
-                    $"{product.Price:F2} | " +
-                    $"{product.QuantityOnHand}");
+                ShowProduct(product);
             }
         }
 
-        private static decimal ReadDecimal()
+        private static void ShowProduct(Product product)
         {
-            string input = Console.ReadLine() ?? string.Empty;
-
-            if (!decimal.TryParse(input, out decimal result))
-            {
-                throw new ArgumentException(
-                    "The price must be a valid number.");
-            }
-
-            return result;
-        }
-
-        private static int ReadInteger()
-        {
-            string input = Console.ReadLine() ?? string.Empty;
-
-            if (!int.TryParse(input, out int result))
-            {
-                throw new ArgumentException(
-                    "The quantity must be a valid integer.");
-            }
-
-            return result;
+            Console.WriteLine(
+                $"{product.Id} | " +
+                $"{product.Name} | " +
+                $"{product.Description} | " +
+                $"{product.SKU} | " +
+                $"{product.Price:F2} | " +
+                $"{product.QuantityOnHand}");
         }
     }
 }
