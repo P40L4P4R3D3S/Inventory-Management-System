@@ -87,12 +87,20 @@ namespace Inventory_Managment_System.Application.Services
         }
         public Product? ReceiveProduct(string sku, int quantity)
         {
+            if(quantity <= 0)
+            {
+                throw new GreaterThanZeroException();
+            }
             Product p = SearchProductsBySKU(sku);
             p.QuantityOnHand += quantity;
             return p;
         }
         public Product? ShipProduct(string sku, int quantity)
         {
+            if (quantity <= 0)
+            {
+                throw new GreaterThanZeroException();
+            }
 
             Product p = SearchProductsBySKU(sku);
             if (p.QuantityOnHand < quantity)
