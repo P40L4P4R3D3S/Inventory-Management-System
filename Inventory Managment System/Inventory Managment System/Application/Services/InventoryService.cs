@@ -62,15 +62,46 @@ namespace Inventory_Managment_System.Application.Services
 
         public Product? SearchProductsBySKU(string sku)
         {
-            return _products.FirstOrDefault(product =>
+            Product? product = _products.FirstOrDefault(product =>
                 product.SKU.Equals(
                     sku,
                     StringComparison.OrdinalIgnoreCase));
+
+            if (product == null)
+            {
+                throw new NotFoundException();
+            }
+
+            return product;
         }
         public Product? SearchProductsById(int id)
         {
-            return _products.FirstOrDefault(product =>
+            Product? product = _products.FirstOrDefault(product =>
                 product.Id == id);
+            if (product == null)
+            {
+                throw new NotFoundException();
+            }
+
+            return product;
+        }
+        public Product? ReceiveProduct(string sku, int quantity)
+        {
+            Product p = SearchProductsBySKU(sku);
+            p.QuantityOnHand += quantity;
+            return p;
+        }
+        public Product? ShipProduct(string sku, int quantity)
+        {
+
+            Product p = SearchProductsBySKU(sku);
+            if (p.QuantityOnHand < quantity)
+            {
+                throw new LessInventoryException(p.QuantityOnHand);
+            }
+
+            p.QuantityOnHand -= quantity;
+            return p;
         }
     }
 }

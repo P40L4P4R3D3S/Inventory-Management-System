@@ -13,5 +13,7 @@ namespace Inventory_Managment_System.Application.Interfaces
         IReadOnlyList<Product> SearchProductsByName(string Name);
         Product? SearchProductsBySKU(string SKU);
         Product? SearchProductsById(int id);
+        Product? ReceiveProduct(string sku, int quantity);
+        Product? ShipProduct(string sku, int quantity);
     }
 }

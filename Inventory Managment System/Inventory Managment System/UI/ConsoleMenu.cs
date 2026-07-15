@@ -52,14 +52,40 @@ namespace Inventory_Managment_System.UI
                     new MenuOption(
                         "Update Products",
                         UpdateProduct)
+                },
+                {
+                    "5",
+                    new MenuOption(
+                        "Receive Products",
+                        ReceiveProduct)
+                },
+                {
+                    "6",
+                    new MenuOption(
+                        "Ship Products",
+                        ShipProduct)
+                },
+                {
+                    "7",
+                    new MenuOption(
+                        "View Product Detail",
+                        ProductDetail)
                 }
             };
 
             RunMenu(
                 title: "Inventory Management System",
                 options: mainOptions,
-                exitOption: "5",
+                exitOption: "8",
                 exitDescription: "Exit");
+        }
+
+        private void ProductDetail()
+        {
+            int id =
+                _consoleInput.ReadInteger("Id: ");
+            Product? p = _inventoryService.SearchProductsById(id);
+            ShowProduct(p);
         }
 
         private static void RunMenu(
@@ -238,7 +264,32 @@ namespace Inventory_Managment_System.UI
                 return;
             }
 
-            ShowProduct(product);
+            ShowPartialProduct(product);
+        }
+
+
+        private void ShipProduct()
+        {
+            string sku =
+                _consoleInput.ReadRequiredString(
+                    "Enter the product SKU: ");
+
+            int quantity =
+                _consoleInput.ReadInteger("Quantity: ");
+            Product? p = _inventoryService.ShipProduct(sku, quantity);
+            ShowProduct(p);
+        }
+
+        private void ReceiveProduct()
+        {
+            string sku =
+                _consoleInput.ReadRequiredString(
+                    "Enter the product SKU: ");
+
+            int quantity =
+                _consoleInput.ReadInteger("Quantity: "); ;
+            Product? p = _inventoryService.ReceiveProduct(sku, quantity);
+            ShowProduct(p);
         }
 
         private static void ShowProductList(
@@ -269,6 +320,14 @@ namespace Inventory_Managment_System.UI
                 $"{product.SKU} | " +
                 $"{product.Price:F2} | " +
                 $"{product.QuantityOnHand}");
+        }
+
+        private static void ShowPartialProduct(Product product)
+        {
+            Console.WriteLine(
+                $"{product.Id} | " +
+                $"{product.Name} | " +
+                $"{product.SKU}");
         }
     }
 }
