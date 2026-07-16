@@ -84,7 +84,7 @@ namespace Inventory_Managment_System.UI
         {
             int id =
                 _consoleInput.ReadInteger("Id: ");
-            Product? p = _inventoryService.SearchProductsById(id);
+            Product? p = _inventoryService.GetProductById(id);
             ShowProduct(p);
         }
 
@@ -254,7 +254,7 @@ namespace Inventory_Managment_System.UI
                     "Enter the product SKU: ");
 
             Product? product =
-                _inventoryService.SearchProductsBySKU(sku);
+                _inventoryService.GetProductBySku(sku);
 
             if (product is null)
             {
