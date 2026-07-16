@@ -1,34 +1,39 @@
 ﻿using Inventory_Managment_System.Domain.Exceptions;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Inventory_Managment_System.Domain.Models
 {
     public class Product
     {
+        private readonly List<InventoryLot> _lots = [];
         public int Id { get; private set; }
         public string Name { get; private set; }
         public string Description { get; private set; }
         public decimal Price { get; private set; }
         public string SKU { get; private set; }
-        public int QuantityOnHand { get; private set; }
+
+        public IReadOnlyList<InventoryLot> Lots =>
+            _lots.AsReadOnly();
+
+        public int QuantityOnHand =>
+            _lots.Sum(lot => lot.QuantityOnHand);
 
         public Product(
             string name,
             string description,
             decimal price,
-            string sku,
-            int quantityOnHand)
+            string sku)
         {
             ValidateName(name);
             ValidateSku(sku);
             ValidatePrice(price);
-            ValidateQuantity(quantityOnHand);
 
             Name = name.Trim();
             Description = description?.Trim() ?? string.Empty;
-            SKU = sku.Trim();
             Price = price;
-            QuantityOnHand = quantityOnHand;
+            SKU = sku.Trim();
         }
 
         public void AssignId(int id)
@@ -49,33 +54,57 @@ namespace Inventory_Managment_System.Domain.Models
             Id = id;
         }
 
-        public void Update(decimal price, int quantity)
+        public void UpdatePrice(decimal price)
         {
             ValidatePrice(price);
-            ValidateQuantity(quantity);
-
             Price = price;
-            QuantityOnHand = quantity;
         }
 
-        public void Receive(int quantity)
+        public void AddLot(InventoryLot lot)
         {
-            ValidateQuantity(quantity);
+            ArgumentNullException.ThrowIfNull(lot);
 
-            QuantityOnHand += quantity;
-        }
+            bool lotNumberExists = _lots.Any(existingLot =>
+                existingLot.LotNumber.Equals(
+                    lot.LotNumber,
+                    StringComparison.OrdinalIgnoreCase));
 
-        public void Ship(int quantity)
-        {
-            ValidateQuantity(quantity);
-
-            if (QuantityOnHand < quantity)
+            if (lotNumberExists)
             {
-                throw new LessInventoryException(
-                    QuantityOnHand);
+                throw new InvalidOperationException(
+                    $"Lot '{lot.LotNumber}' already exists " +
+                    $"for product '{SKU}'.");
             }
 
-            QuantityOnHand -= quantity;
+            _lots.Add(lot);
+        }
+
+        public InventoryLot GetLotByNumber(
+            string lotNumber)
+        {
+            if (string.IsNullOrWhiteSpace(lotNumber))
+            {
+                throw new ArgumentException(
+                    "Lot number cannot be empty.",
+                    nameof(lotNumber));
+            }
+
+            return _lots.FirstOrDefault(lot =>
+                lot.LotNumber.Equals(
+                    lotNumber.Trim(),
+                    StringComparison.OrdinalIgnoreCase))
+                ?? throw new NotFoundException(
+                    $"Lot '{lotNumber}' was not found.");
+        }
+
+        public void ShipFromLot(
+            string lotNumber,
+            int quantity)
+        {
+            InventoryLot lot =
+                GetLotByNumber(lotNumber);
+
+            lot.Ship(quantity);
         }
 
         private static void ValidateName(string name)
@@ -108,14 +137,12 @@ namespace Inventory_Managment_System.Domain.Models
             }
         }
 
-        private static void ValidateQuantity(int quantity)
+        private static void ValidatePositiveQuantity(
+            int quantity)
         {
-            if (quantity <= 0)
-            {
-                throw new ArgumentOutOfRangeException(
-                    nameof(quantity),
-                    "Quantity cannot be negative.");
-            }
+            throw new ArgumentOutOfRangeException(
+                nameof(quantity),
+                "Quantity cannot be negative.");
         }
     }
 }
