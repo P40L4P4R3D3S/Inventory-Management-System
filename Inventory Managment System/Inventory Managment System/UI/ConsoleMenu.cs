@@ -263,8 +263,7 @@ namespace Inventory_Managment_System.UI
 
                 return;
             }
-
-            ShowPartialProduct(product);
+            ShowProduct(product, ProductDisplayMode.Summary);
         }
 
 
@@ -311,23 +310,30 @@ namespace Inventory_Managment_System.UI
             }
         }
 
-        private static void ShowProduct(Product product)
+        private static void ShowProduct(Product product, ProductDisplayMode displayMode = ProductDisplayMode.Detailed)
         {
-            Console.WriteLine(
-                $"{product.Id} | " +
-                $"{product.Name} | " +
-                $"{product.Description} | " +
-                $"{product.SKU} | " +
-                $"{product.Price:F2} | " +
-                $"{product.QuantityOnHand}");
-        }
+            string productInformation = displayMode switch
+            {
+                ProductDisplayMode.Summary =>
+                    $"{product.Id} | " +
+                    $"{product.Name} | " +
+                    $"{product.SKU}",
 
-        private static void ShowPartialProduct(Product product)
-        {
-            Console.WriteLine(
-                $"{product.Id} | " +
-                $"{product.Name} | " +
-                $"{product.SKU}");
+                ProductDisplayMode.Detailed =>
+                    $"{product.Id} | " +
+                    $"{product.Name} | " +
+                    $"{product.Description} | " +
+                    $"{product.SKU} | " +
+                    $"{product.Price:F2} | " +
+                    $"{product.QuantityOnHand}",
+
+                _ => throw new ArgumentOutOfRangeException(
+                    nameof(displayMode),
+                    displayMode,
+                    "Invalid product display mode.")
+            };
+
+            Console.WriteLine(productInformation);
         }
     }
 }

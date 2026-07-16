@@ -6,8 +6,8 @@ namespace Inventory_Managment_System.Domain.Exceptions
 {
     public class NotFoundException : Exception
     {
-        public NotFoundException()
-            : base("Product not Found")
+        public NotFoundException(string message)
+            : base($"{message}")
         {
         }
     }

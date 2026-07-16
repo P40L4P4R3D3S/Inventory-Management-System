@@ -59,39 +59,42 @@ namespace Inventory_Managment_System.Application.Services
                         StringComparison.OrdinalIgnoreCase))
                 .ToList();
         }
-
         public Product? SearchProductsBySKU(string sku)
         {
-            Product? product = _products.FirstOrDefault(product =>
-                product.SKU.Equals(
-                    sku,
-                    StringComparison.OrdinalIgnoreCase));
-
-            if (product == null)
+            if (string.IsNullOrWhiteSpace(sku))
             {
-                throw new NotFoundException();
+                throw new ArgumentException(
+                    "SKU cannot be empty.",
+                    nameof(sku));
             }
 
-            return product;
+            return FindProduct(
+                product => product.SKU.Equals(
+                    sku,
+                    StringComparison.OrdinalIgnoreCase),
+                $"Product with SKU '{sku}' was not found.");
         }
+
         public Product? SearchProductsById(int id)
         {
-            Product? product = _products.FirstOrDefault(product =>
-                product.Id == id);
-            if (product == null)
-            {
-                throw new NotFoundException();
-            }
-
-            return product;
+            return FindProduct(
+                product => product.Id == id,
+                $"Product with ID '{id}' was not found.");
         }
+
+        private Product? FindProduct(Func<Product, bool> condition, string errorMessage)
+        {
+            return _products.FirstOrDefault(condition)
+                ?? throw new NotFoundException(errorMessage);
+        }
+
         public Product? ReceiveProduct(string sku, int quantity)
         {
             if(quantity <= 0)
             {
                 throw new GreaterThanZeroException();
             }
-            Product p = SearchProductsBySKU(sku);
+            Product? p = SearchProductsBySKU(sku);
             p.QuantityOnHand += quantity;
             return p;
         }
@@ -102,7 +105,7 @@ namespace Inventory_Managment_System.Application.Services
                 throw new GreaterThanZeroException();
             }
 
-            Product p = SearchProductsBySKU(sku);
+            Product? p = SearchProductsBySKU(sku);
             if (p.QuantityOnHand < quantity)
             {
                 throw new LessInventoryException(p.QuantityOnHand);
