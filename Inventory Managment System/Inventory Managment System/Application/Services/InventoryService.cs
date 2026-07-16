@@ -59,7 +59,7 @@ namespace Inventory_Managment_System.Application.Services
                         StringComparison.OrdinalIgnoreCase))
                 .ToList();
         }
-        public Product? SearchProductsBySKU(string sku)
+        public Product SearchProductsBySKU(string sku)
         {
             if (string.IsNullOrWhiteSpace(sku))
             {
@@ -75,37 +75,43 @@ namespace Inventory_Managment_System.Application.Services
                 $"Product with SKU '{sku}' was not found.");
         }
 
-        public Product? SearchProductsById(int id)
+        public Product SearchProductsById(int id)
         {
+            if (id <= 0)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(id),
+                    "Product ID must be greater than zero.");
+            }
             return FindProduct(
                 product => product.Id == id,
                 $"Product with ID '{id}' was not found.");
         }
 
-        private Product? FindProduct(Func<Product, bool> condition, string errorMessage)
+        private Product FindProduct(Func<Product, bool> condition, string errorMessage)
         {
             return _products.FirstOrDefault(condition)
                 ?? throw new NotFoundException(errorMessage);
         }
 
-        public Product? ReceiveProduct(string sku, int quantity)
+        public Product ReceiveProduct(string sku, int quantity)
         {
             if(quantity <= 0)
             {
                 throw new GreaterThanZeroException();
             }
-            Product? p = SearchProductsBySKU(sku);
+            Product p = SearchProductsBySKU(sku);
             p.QuantityOnHand += quantity;
             return p;
         }
-        public Product? ShipProduct(string sku, int quantity)
+        public Product ShipProduct(string sku, int quantity)
         {
             if (quantity <= 0)
             {
                 throw new GreaterThanZeroException();
             }
 
-            Product? p = SearchProductsBySKU(sku);
+            Product p = SearchProductsBySKU(sku);
             if (p.QuantityOnHand < quantity)
             {
                 throw new LessInventoryException(p.QuantityOnHand);
