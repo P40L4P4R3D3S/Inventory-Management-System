@@ -35,10 +35,10 @@ namespace Inventory_Managment_System.Domain.Models
             DateTime? expirationDate = null,
             string supplier = "")
         {
-            ValidateLotNumber(lotNumber);
-            ValidatePositiveQuantity(quantity);
-            ValidateUnitCost(unitCost);
-            ValidateExpDate(expirationDate, receivedDate);
+            Validators.ValidateLotNumber(lotNumber);
+            Validators.ValidatePositiveQuantity(quantity);
+            Validators.ValidateUnitCost(unitCost);
+            Validators.ValidateExpDate(expirationDate, receivedDate);
 
             LotNumber = lotNumber.Trim();
             InitialQuantity = quantity;
@@ -69,7 +69,10 @@ namespace Inventory_Managment_System.Domain.Models
 
         public void Ship(int quantity)
         {
-            ValidatePositiveQuantity(quantity);
+            if (quantity <= 0)
+            {
+                Validators.ValidatePositiveQuantity(quantity);
+            }
 
             if (QuantityOnHand < quantity)
             {
@@ -78,48 +81,6 @@ namespace Inventory_Managment_System.Domain.Models
             }
 
             QuantityOnHand -= quantity;
-        }
-
-        private static void ValidatePositiveQuantity(
-            int quantity)
-        {
-            if (quantity <= 0)
-            {
-                throw new ArgumentOutOfRangeException(
-                    nameof(quantity),
-                    "Quantity cannot be negative.");
-            }
-        }
-
-        private static void ValidateLotNumber(string lotNumber)
-        {
-            if (string.IsNullOrWhiteSpace(lotNumber))
-            {
-                throw new ArgumentException(
-                    "Lot number cannot be empty.",
-                    nameof(lotNumber));
-            }
-        }
-
-        private static void ValidateUnitCost(decimal unitCost)
-        {
-            if (unitCost < 0)
-            {
-                throw new ArgumentOutOfRangeException(
-                    nameof(unitCost),
-                    "Unit cost cannot be negative.");
-            }
-        }
-
-        private static void ValidateExpDate(DateTime? expirationDate, DateTime receivedDate)
-        {
-            if (expirationDate.HasValue &&
-                expirationDate.Value.Date < receivedDate.Date)
-            {
-                throw new ArgumentException(
-                    "Expiration date cannot be before the received date.",
-                    nameof(expirationDate));
-            }
         }
     }
 }

@@ -4,6 +4,7 @@ using Inventory_Managment_System.UI.Interfaces;
 using Inventory_Managment_System.UI.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Inventory_Managment_System.UI
 {
@@ -168,15 +169,11 @@ namespace Inventory_Managment_System.UI
             decimal price =
                 _consoleInput.ReadDecimal("Price: ");
 
-            int quantity =
-                _consoleInput.ReadInteger("Quantity: ");
-
             Product product = new(
                 name,
                 description,
                 price,
-                sku,
-                quantity);
+                sku);
 
             _inventoryService.AddProduct(product);
 
@@ -193,10 +190,7 @@ namespace Inventory_Managment_System.UI
             decimal price =
                 _consoleInput.ReadDecimal("Price: ");
 
-            int quantity =
-                _consoleInput.ReadInteger("Quantity: ");
-
-            _inventoryService.UpdateProduct(id, price, quantity);
+            _inventoryService.UpdateProduct(id, price);
 
             Console.WriteLine(
                 "Product updated successfully.");
@@ -207,7 +201,7 @@ namespace Inventory_Managment_System.UI
             IReadOnlyList<Product> products =
                 _inventoryService.GetAllProducts();
 
-            ShowProductList(products);
+            ShowProductList(products, ProductDisplayMode.Summary);
         }
 
         private void RunSearchMenu()
@@ -273,10 +267,29 @@ namespace Inventory_Managment_System.UI
                 _consoleInput.ReadRequiredString(
                     "Enter the product SKU: ");
 
+            Product product =
+                _inventoryService.GetProductBySku(sku);
+
+            ShowLots(product.Lots);
+
+            string lotNumber =
+                _consoleInput.ReadRequiredString(
+                    "Enter the lot number: ");
+
             int quantity =
-                _consoleInput.ReadInteger("Quantity: ");
-            Product? p = _inventoryService.ShipProduct(sku, quantity);
-            ShowProduct(p);
+                _consoleInput.ReadInteger(
+                    "Quantity: ");
+
+            InventoryLot lot =
+                _inventoryService.ShipProduct(
+                    sku,
+                    lotNumber,
+                    quantity);
+
+            Console.WriteLine(
+                "Product shipped successfully.");
+
+            ShowLot(lot);
         }
 
         private void ReceiveProduct()
@@ -285,14 +298,23 @@ namespace Inventory_Managment_System.UI
                 _consoleInput.ReadRequiredString(
                     "Enter the product SKU: ");
 
-            int quantity =
-                _consoleInput.ReadInteger("Quantity: "); ;
-            Product? p = _inventoryService.ReceiveProduct(sku, quantity);
-            ShowProduct(p);
+            int quantity = _consoleInput.ReadInteger("Quantity: ");
+
+            string lotNumber =
+                _consoleInput.ReadRequiredString("Lot number: ");
+
+            DateTime receivedDate = DateTime.Now;
+            DateTime? expirationDate = _consoleInput.ReadDateTime("Set Date Expiration (DD-MM-YYYY): ");
+            string supplier =
+                _consoleInput.ReadRequiredString("Supplier");
+
+            InventoryLot lot = _inventoryService.ReceiveProduct(sku, lotNumber, quantity, receivedDate, expirationDate, supplier);
+            ShowLot(lot);
+            Console.WriteLine("Lot Added Succesfully");
         }
 
         private static void ShowProductList(
-            IReadOnlyList<Product> products)
+            IReadOnlyList<Product> products, ProductDisplayMode displayMode = ProductDisplayMode.Detailed)
         {
             if (products.Count == 0)
             {
@@ -301,12 +323,24 @@ namespace Inventory_Managment_System.UI
             }
 
             Console.WriteLine();
-            Console.WriteLine(
-                "ID | Name | Description | SKU | Price | Quantity");
+            string header = displayMode switch
+            {
+                ProductDisplayMode.Summary =>
+                    "ID | Name | SKU ",
 
+                ProductDisplayMode.Detailed =>
+                    "ID | Name | Description | SKU | Price ",
+
+                _ => throw new ArgumentOutOfRangeException(
+                    nameof(displayMode),
+                    displayMode,
+                    "Invalid product display mode.")
+            };
+
+            Console.WriteLine(header);
             foreach (Product product in products)
             {
-                ShowProduct(product);
+                ShowProduct(product, displayMode);
             }
         }
 
@@ -324,8 +358,7 @@ namespace Inventory_Managment_System.UI
                     $"{product.Name} | " +
                     $"{product.Description} | " +
                     $"{product.SKU} | " +
-                    $"{product.Price:F2} | " +
-                    $"{product.QuantityOnHand}",
+                    $"{product.Price:F2} | ",
 
                 _ => throw new ArgumentOutOfRangeException(
                     nameof(displayMode),
@@ -334,6 +367,44 @@ namespace Inventory_Managment_System.UI
             };
 
             Console.WriteLine(productInformation);
+        }
+
+        private static void ShowLots(IReadOnlyList<InventoryLot> lots)
+        {
+            IReadOnlyList<InventoryLot> availableLots =
+                lots
+                    .Where(lot => lot.QuantityOnHand > 0)
+                    .ToList();
+
+            if (availableLots.Count == 0)
+            {
+                Console.WriteLine(
+                    "There are no available lots.");
+
+                return;
+            }
+
+            Console.WriteLine();
+            Console.WriteLine(
+                "Lot | Received | Expiration | Available");
+
+            foreach (InventoryLot lot in availableLots)
+            {
+                ShowLot(lot);
+            }
+        }
+
+        private static void ShowLot(InventoryLot lot)
+        {
+            string expirationDate =
+                lot.ExpirationDate?.ToString("dd-MM-yyyy")
+                ?? "N/A";
+
+            Console.WriteLine(
+                $"{lot.LotNumber} | " +
+                $"{lot.ReceivedDate:dd-MM-yyyy} | " +
+                $"{expirationDate} | " +
+                $"{lot.QuantityOnHand}");
         }
     }
 }

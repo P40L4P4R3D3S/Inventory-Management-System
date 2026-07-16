@@ -26,9 +26,9 @@ namespace Inventory_Managment_System.Domain.Models
             decimal price,
             string sku)
         {
-            ValidateName(name);
-            ValidateSku(sku);
-            ValidatePrice(price);
+            Validators.ValidateName(name);
+            Validators.ValidateSku(sku);
+            Validators.ValidatePrice(price);
 
             Name = name.Trim();
             Description = description?.Trim() ?? string.Empty;
@@ -56,7 +56,7 @@ namespace Inventory_Managment_System.Domain.Models
 
         public void UpdatePrice(decimal price)
         {
-            ValidatePrice(price);
+            Validators.ValidatePrice(price);
             Price = price;
         }
 
@@ -79,8 +79,7 @@ namespace Inventory_Managment_System.Domain.Models
             _lots.Add(lot);
         }
 
-        public InventoryLot GetLotByNumber(
-            string lotNumber)
+        public InventoryLot GetLotByNumber( string lotNumber)
         {
             if (string.IsNullOrWhiteSpace(lotNumber))
             {
@@ -91,13 +90,13 @@ namespace Inventory_Managment_System.Domain.Models
 
             return _lots.FirstOrDefault(lot =>
                 lot.LotNumber.Equals(
-                    lotNumber.Trim(),
+                    lotNumber,
                     StringComparison.OrdinalIgnoreCase))
                 ?? throw new NotFoundException(
-                    $"Lot '{lotNumber}' was not found.");
+                    $"Lot '{lotNumber}' was not found for product '{SKU}'.");
         }
 
-        public void ShipFromLot(
+        public InventoryLot ShipFromLot(
             string lotNumber,
             int quantity)
         {
@@ -105,44 +104,8 @@ namespace Inventory_Managment_System.Domain.Models
                 GetLotByNumber(lotNumber);
 
             lot.Ship(quantity);
-        }
 
-        private static void ValidateName(string name)
-        {
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                throw new ArgumentException(
-                    "Product name cannot be empty.",
-                    nameof(name));
-            }
-        }
-
-        private static void ValidateSku(string sku)
-        {
-            if (string.IsNullOrWhiteSpace(sku))
-            {
-                throw new ArgumentException(
-                    "SKU cannot be empty.",
-                    nameof(sku));
-            }
-        }
-
-        private static void ValidatePrice(decimal price)
-        {
-            if (price < 0)
-            {
-                throw new ArgumentOutOfRangeException(
-                    nameof(price),
-                    "Price cannot be negative.");
-            }
-        }
-
-        private static void ValidatePositiveQuantity(
-            int quantity)
-        {
-            throw new ArgumentOutOfRangeException(
-                nameof(quantity),
-                "Quantity cannot be negative.");
+            return lot;
         }
     }
 }

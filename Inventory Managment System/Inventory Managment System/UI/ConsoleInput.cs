@@ -1,5 +1,6 @@
 ﻿using Inventory_Managment_System.UI.Interfaces;
 using System;
+using System.Globalization;
 
 namespace Inventory_Managment_System.UI
 {
@@ -62,6 +63,34 @@ namespace Inventory_Managment_System.UI
 
                 Console.WriteLine(
                     "The value must be a valid integer.");
+            }
+        }
+
+        public DateTime? ReadDateTime(string message)
+        {
+            while (true)
+            {
+                Console.Write(message);
+
+                string input = Console.ReadLine()?.Trim() ?? string.Empty;
+
+                if (string.IsNullOrWhiteSpace(input))
+                {
+                    return null;
+                }
+
+                if (DateTime.TryParseExact(
+                        input,
+                        "dd-MM-yyyy",
+                        CultureInfo.InvariantCulture,
+                        DateTimeStyles.None,
+                        out DateTime result))
+                {
+                    return result.Date;
+                }
+
+                Console.WriteLine(
+                    "Invalid date. Please use the format DD-MM-YYYY.");
             }
         }
     }

@@ -10,7 +10,9 @@ namespace Inventory_Managment_System.Application.Services
     internal class InventoryService : IInventoryService
     {
         private readonly List<Product> _products = [];
-        private int _nextId = 1;
+
+        private int _nextProductId = 1;
+        private int _nextLotId = 1;
 
         public void AddProduct(Product product)
         {
@@ -27,7 +29,7 @@ namespace Inventory_Managment_System.Application.Services
                     product.SKU);
             }
 
-            product.AssignId(_nextId++);
+            product.AssignId(_nextProductId++);
             _products.Add(product);
         }
 
@@ -36,14 +38,36 @@ namespace Inventory_Managment_System.Application.Services
             return _products.ToList();
         }
 
-        public void UpdateProduct(
-            int id,
-            decimal price,
-            int quantity)
+        public Product GetProductById(int id)
         {
-            Product product = GetProductById(id);
+            if (id <= 0)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(id),
+                    "Product ID must be greater than zero.");
+            }
 
-            product.Update(price, quantity);
+            return FindProduct(
+                product => product.Id == id,
+                $"Product with ID '{id}' was not found.");
+        }
+
+        public Product GetProductBySku(string sku)
+        {
+            if (string.IsNullOrWhiteSpace(sku))
+            {
+                throw new ArgumentException(
+                    "SKU cannot be empty.",
+                    nameof(sku));
+            }
+
+            string normalizedSku = sku.Trim();
+
+            return FindProduct(
+                product => product.SKU.Equals(
+                    normalizedSku,
+                    StringComparison.OrdinalIgnoreCase),
+                $"Product with SKU '{normalizedSku}' was not found.");
         }
 
         public IReadOnlyList<Product> SearchProductsByName(
@@ -66,56 +90,59 @@ namespace Inventory_Managment_System.Application.Services
                 .ToList();
         }
 
-        public Product GetProductBySku(string sku)
+        public void UpdateProduct(
+            int id,
+            decimal price)
         {
-            if (string.IsNullOrWhiteSpace(sku))
-            {
-                throw new ArgumentException(
-                    "SKU cannot be empty.",
-                    nameof(sku));
-            }
+            Product product =
+                GetProductById(id);
 
-            string normalizedSku = sku.Trim();
-            return FindProduct(
-                product => product.SKU.Equals(
-                    normalizedSku,
-                    StringComparison.OrdinalIgnoreCase),
-                $"Product with SKU '{normalizedSku}' was not found.");
+            product.UpdatePrice(price);
         }
 
-        public Product GetProductById(int id)
-        {
-            if (id <= 0)
-            {
-                throw new ArgumentOutOfRangeException(
-                    nameof(id),
-                    "Product ID must be greater than zero.");
-            }
-            return FindProduct(
-                product => product.Id == id,
-                $"Product with ID '{id}' was not found.");
-        }
-
-        public Product ReceiveProduct(
+        public InventoryLot ReceiveProduct(
             string sku,
-            int quantity)
+            string lotNumber,
+            int quantity,
+            DateTime receivedDate,
+            DateTime? expirationDate,
+            string supplier)
         {
-            Product product = GetProductBySku(sku);
+            Product product =
+                GetProductBySku(sku);
 
-            product.Receive(quantity);
+            InventoryLot lot = new(
+                lotNumber,
+                quantity,
+                product.Price,
+                receivedDate,
+                expirationDate,
+                supplier);
 
-            return product;
+            lot.AssignId(_nextLotId++);
+
+            product.AddLot(lot);
+
+            return lot;
         }
 
-        public Product ShipProduct(
+        public InventoryLot GetLot(
             string sku,
-            int quantity)
+            string lotNumber)
         {
-            Product product = GetProductBySku(sku);
+            Product product =
+                GetProductBySku(sku);
 
-            product.Ship(quantity);
+            return product.GetLotByNumber(
+                lotNumber);
+        }
 
-            return product;
+        public IReadOnlyList<InventoryLot> GetProductLots(string sku)
+        {
+            Product product =
+                GetProductBySku(sku);
+
+            return product.Lots;
         }
 
         private Product FindProduct(
@@ -125,7 +152,21 @@ namespace Inventory_Managment_System.Application.Services
             ArgumentNullException.ThrowIfNull(condition);
 
             return _products.FirstOrDefault(condition)
-                ?? throw new NotFoundException(errorMessage);
+                ?? throw new NotFoundException(
+                    errorMessage);
+        }
+
+        public InventoryLot ShipProduct(
+            string sku,
+            string lotNumber,
+            int quantity)
+        {
+            Product product =
+                GetProductBySku(sku);
+
+            return product.ShipFromLot(
+                lotNumber,
+                quantity);
         }
     }
 }

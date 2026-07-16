@@ -10,5 +10,6 @@ namespace Inventory_Managment_System.UI.Interfaces
         string ReadOptionalString(string message);
         decimal ReadDecimal(string message);
         int ReadInteger(string message);
+        DateTime? ReadDateTime(string message);
     }
 }
