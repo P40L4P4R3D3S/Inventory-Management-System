@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Inventory_Managment_System.Domain
+namespace Inventory_Managment_System.Domain.Validation
 {
     public static class Validators
     {

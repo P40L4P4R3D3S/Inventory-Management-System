@@ -1,10 +1,12 @@
-﻿using Inventory_Managment_System.Application.Repository.Interfaces;
-using Inventory_Managment_System.Application.Services.Interfaces;
-using Inventory_Managment_System.Domain.Exceptions;
-using Inventory_Managment_System.Domain.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+
+using Inventory_Managment_System.Application.Ports.Inbound;
+using Inventory_Managment_System.Application.Ports.Outbound;
+using Inventory_Managment_System.Domain.Entities;
+using Inventory_Managment_System.Domain.Exceptions;
+using Inventory_Managment_System.Domain.Models;
 
 namespace Inventory_Managment_System.Application.Services
 {
@@ -161,12 +163,12 @@ namespace Inventory_Managment_System.Application.Services
         }
 
         public InventoryLot ReceiveProduct(
-    string sku,
-    string lotNumber,
-    int quantity,
-    DateTime receivedDate,
-    DateTime? expirationDate,
-    string supplier)
+        string sku,
+        string lotNumber,
+        int quantity,
+        DateTime receivedDate,
+        DateTime? expirationDate,
+        string supplier)
         {
             Product product =
                 GetProductBySku(sku);

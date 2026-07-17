@@ -1,7 +1,10 @@
-﻿using Inventory_Managment_System.Domain.Exceptions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+
+using Inventory_Managment_System.Domain.Entities;
+using Inventory_Managment_System.Domain.Exceptions;
+using Inventory_Managment_System.Domain.Validation;
 
 namespace Inventory_Managment_System.Domain.Models
 {
@@ -79,7 +82,7 @@ namespace Inventory_Managment_System.Domain.Models
             _lots.Add(lot);
         }
 
-        public InventoryLot GetLotByNumber( string lotNumber)
+        public InventoryLot GetLotByNumber(string lotNumber)
         {
             if (string.IsNullOrWhiteSpace(lotNumber))
             {

@@ -13,7 +13,8 @@ tab_width = 4
 
 # New line preferences
 end_of_line = crlf
-insert_final_newline = false
+insert_final_newline = true
+trim_trailing_whitespace = true
 
 #### .NET Code Actions ####
 
@@ -25,11 +26,9 @@ dotnet_property_generation_behavior = prefer_throwing_properties
 # Symbol search
 dotnet_search_reference_assemblies = true
 
-#### .NET Coding Conventions ####
-
 # Organize usings
-dotnet_separate_import_directive_groups = false
-dotnet_sort_system_directives_first = false
+dotnet_sort_system_directives_first = true
+dotnet_separate_import_directive_groups = true
 file_header_template = unset
 
 # this. and Me. preferences

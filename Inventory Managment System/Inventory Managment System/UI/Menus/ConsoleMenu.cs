@@ -1,12 +1,15 @@
-﻿using Inventory_Managment_System.Application.Services.Interfaces;
-using Inventory_Managment_System.Domain.Models;
-using Inventory_Managment_System.UI.Interfaces;
-using Inventory_Managment_System.UI.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Inventory_Managment_System.UI
+using Inventory_Managment_System.Application.Ports.Inbound;
+using Inventory_Managment_System.Domain.Entities;
+using Inventory_Managment_System.Domain.Models;
+using Inventory_Managment_System.UI.Enums;
+using Inventory_Managment_System.UI.Input;
+using Inventory_Managment_System.UI.Models;
+
+namespace Inventory_Managment_System.UI.Menus
 {
     public class ConsoleMenu
     {
@@ -180,6 +183,7 @@ namespace Inventory_Managment_System.UI
             Console.WriteLine(
                 "Product added successfully.");
         }
+
 
         private void UpdateProduct()
         {

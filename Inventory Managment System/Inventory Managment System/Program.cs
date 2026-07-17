@@ -1,12 +1,12 @@
-﻿using Inventory_Managment_System.Application.Repository;
-using Inventory_Managment_System.Application.Repository.Interfaces;
-using Inventory_Managment_System.Application.Services;
-using Inventory_Managment_System.Application.Services.Interfaces;
-using Inventory_Managment_System.Data.Repositories;
-using Inventory_Managment_System.UI;
-using Inventory_Managment_System.UI.Interfaces;
-using System;
+﻿using System;
 using System.IO;
+
+using Inventory_Managment_System.Application.Ports.Inbound;
+using Inventory_Managment_System.Application.Ports.Outbound;
+using Inventory_Managment_System.Application.Services;
+using Inventory_Managment_System.Infrastructure.Persistence;
+using Inventory_Managment_System.UI.Input;
+using Inventory_Managment_System.UI.Menus;
 
 class Program
 {

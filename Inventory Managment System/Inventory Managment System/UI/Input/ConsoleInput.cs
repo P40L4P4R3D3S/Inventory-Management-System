@@ -1,8 +1,7 @@
-﻿using Inventory_Managment_System.UI.Interfaces;
-using System;
+﻿using System;
 using System.Globalization;
 
-namespace Inventory_Managment_System.UI
+namespace Inventory_Managment_System.UI.Input
 {
     public class ConsoleInput : IConsoleInput
     {

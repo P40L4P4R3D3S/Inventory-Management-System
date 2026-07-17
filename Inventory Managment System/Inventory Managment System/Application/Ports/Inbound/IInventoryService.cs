@@ -1,8 +1,10 @@
-﻿using Inventory_Managment_System.Domain.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
-namespace Inventory_Managment_System.Application.Services.Interfaces
+using Inventory_Managment_System.Domain.Entities;
+using Inventory_Managment_System.Domain.Models;
+
+namespace Inventory_Managment_System.Application.Ports.Inbound
 {
     public interface IInventoryService
     {

@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Inventory_Managment_System.Application.Repository.Interfaces
+namespace Inventory_Managment_System.Application.Ports.Outbound
 {
     public interface IProductRepository
     {

@@ -1,7 +1,9 @@
-﻿using Inventory_Managment_System.Domain.Exceptions;
-using System;
+﻿using System;
 
-namespace Inventory_Managment_System.Domain.Models
+using Inventory_Managment_System.Domain.Exceptions;
+using Inventory_Managment_System.Domain.Validation;
+
+namespace Inventory_Managment_System.Domain.Entities
 {
     public class InventoryLot
     {

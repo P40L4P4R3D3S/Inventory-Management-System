@@ -1,9 +1,9 @@
-﻿using Inventory_Managment_System.Application.Repository;
-using Inventory_Managment_System.Application.Repository.Interfaces;
-using Inventory_Managment_System.Domain.Models;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
-namespace Inventory_Managment_System.Data.Repositories
+using Inventory_Managment_System.Application.Ports.Outbound;
+using Inventory_Managment_System.Domain.Entities;
+
+namespace Inventory_Managment_System.Infrastructure.Persistence
 {
     public class TransactionRepository
         : ITransactionRepository
