@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Inventory_Managment_System.Application.Interfaces
+namespace Inventory_Managment_System.Application.Services.Interfaces
 {
     public interface IInventoryService
     {

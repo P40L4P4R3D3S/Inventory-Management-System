@@ -1,4 +1,4 @@
-﻿using Inventory_Managment_System.Application.Interfaces;
+﻿using Inventory_Managment_System.Application.Services.Interfaces;
 using Inventory_Managment_System.Domain.Models;
 using Inventory_Managment_System.UI.Interfaces;
 using Inventory_Managment_System.UI.Models;
