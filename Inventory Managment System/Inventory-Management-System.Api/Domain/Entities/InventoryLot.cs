@@ -1,31 +1,41 @@
 ﻿using System;
+using System.Text.Json.Serialization;
 
 using Inventory_Management_System.Api.Domain.Exceptions;
 using Inventory_Management_System.Api.Domain.Validation;
-
 
 namespace Inventory_Management_System.Api.Domain.Entities
 {
     public class InventoryLot
     {
+        [JsonInclude]
         public int Id { get; private set; }
 
+        [JsonInclude]
         public string LotNumber { get; private set; }
 
+        [JsonInclude]
         public DateTime ReceivedDate { get; private set; }
 
+        [JsonInclude]
         public DateTime? ExpirationDate { get; private set; }
 
+        [JsonInclude]
         public decimal UnitCost { get; private set; }
 
+        [JsonInclude]
         public int InitialQuantity { get; private set; }
 
+        [JsonInclude]
         public int QuantityOnHand { get; private set; }
 
+        [JsonInclude]
         public string Supplier { get; private set; }
 
+        [JsonIgnore]
         public bool IsEmpty => QuantityOnHand == 0;
 
+        [JsonIgnore]
         public bool IsExpired =>
             ExpirationDate.HasValue &&
             ExpirationDate.Value.Date < DateTime.Today;

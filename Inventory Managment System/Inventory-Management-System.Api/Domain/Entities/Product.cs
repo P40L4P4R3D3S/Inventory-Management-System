@@ -1,19 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Serialization;
 
 using Inventory_Management_System.Api.Domain.Exceptions;
 using Inventory_Management_System.Api.Domain.Validation;
+
 
 namespace Inventory_Management_System.Api.Domain.Entities
 {
     public class Product
     {
+        [JsonInclude]
+        [JsonPropertyName("lots")]
         private readonly List<InventoryLot> _lots = [];
+        [JsonInclude]
         public int Id { get; private set; }
+        [JsonInclude]
         public string Name { get; private set; }
+        [JsonInclude]
         public string Description { get; private set; }
+        [JsonInclude]
         public decimal Price { get; private set; }
+        [JsonInclude]
         public string SKU { get; private set; }
 
         public IReadOnlyList<InventoryLot> Lots =>
