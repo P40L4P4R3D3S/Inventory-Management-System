@@ -1,6 +1,8 @@
 ﻿using System;
 
-namespace Inventory_Managment_System.Domain.Entities
+using Inventory_Management_System.Api.Domain.Enums;
+
+namespace Inventory_Management_System.Api.Domain.Entities
 {
     public class InventoryTransaction
     {

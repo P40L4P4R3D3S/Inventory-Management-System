@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
 
-using Inventory_Managment_System.Application.Ports.Outbound;
-using Inventory_Managment_System.Domain.Entities;
+using Inventory_Management_System.Api.Application.Ports.Outbound;
+using Inventory_Management_System.Api.Domain.Entities;
 
-namespace Inventory_Managment_System.Infrastructure.Persistence
+namespace Inventory_Management_System.Api.Infrastructure.Persistence
 {
-    public class TransactionRepository
-        : ITransactionRepository
+    public class TransactionRepository : ITransactionRepository
     {
         private readonly JsonRepository<InventoryTransaction>
             _repository;

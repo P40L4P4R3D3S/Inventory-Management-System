@@ -3,4 +3,5 @@
     <File Path=".editorconfig" />
   </Folder>
   <Project Path="Inventory Managment System/Inventory Managment System.csproj" />
+  <Project Path="Inventory-Management-System.Api/Inventory-Management-System.Api.csproj" />
 </Solution>

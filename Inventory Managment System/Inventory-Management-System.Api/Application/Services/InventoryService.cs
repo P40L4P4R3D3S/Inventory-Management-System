@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using Inventory_Managment_System.Application.Ports.Inbound;
-using Inventory_Managment_System.Application.Ports.Outbound;
-using Inventory_Managment_System.Domain.Entities;
-using Inventory_Managment_System.Domain.Exceptions;
-using Inventory_Managment_System.Domain.Models;
+using Inventory_Management_System.Api.Application.Ports.Inbound;
+using Inventory_Management_System.Api.Application.Ports.Outbound;
+using Inventory_Management_System.Api.Domain.Entities;
+using Inventory_Management_System.Api.Domain.Enums;
+using Inventory_Management_System.Api.Domain.Exceptions;
 
-namespace Inventory_Managment_System.Application.Services
+namespace Inventory_Management_System.Api.Application.Services
 {
     public class InventoryService : IInventoryService
     {

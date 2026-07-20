@@ -4,7 +4,7 @@ using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Inventory_Managment_System.Infrastructure.Persistence
+namespace Inventory_Management_System.Api.Infrastructure.Persistence
 {
     public class JsonRepository<T>
     {

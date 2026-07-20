@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using Inventory_Managment_System.Domain.Entities;
-using Inventory_Managment_System.Domain.Exceptions;
-using Inventory_Managment_System.Domain.Validation;
+using Inventory_Management_System.Api.Domain.Exceptions;
+using Inventory_Management_System.Api.Domain.Validation;
 
-namespace Inventory_Managment_System.Domain.Models
+namespace Inventory_Management_System.Api.Domain.Entities
 {
     public class Product
     {

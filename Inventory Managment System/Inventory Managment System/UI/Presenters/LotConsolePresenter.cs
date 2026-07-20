@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using Inventory_Managment_System.Domain.Entities;
+using Inventory_Management_System.Api.Domain.Entities;
+
 
 namespace Inventory_Managment_System.UI.Presenters
 {

@@ -1,9 +1,10 @@
 ﻿using System;
 
-using Inventory_Managment_System.Domain.Exceptions;
-using Inventory_Managment_System.Domain.Validation;
+using Inventory_Management_System.Api.Domain.Exceptions;
+using Inventory_Management_System.Api.Domain.Validation;
 
-namespace Inventory_Managment_System.Domain.Entities
+
+namespace Inventory_Management_System.Api.Domain.Entities
 {
     public class InventoryLot
     {

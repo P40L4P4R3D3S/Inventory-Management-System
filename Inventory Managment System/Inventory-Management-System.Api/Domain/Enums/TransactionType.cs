@@ -1,4 +1,4 @@
-﻿namespace Inventory_Managment_System.Domain.Entities
+﻿namespace Inventory_Management_System.Api.Domain.Enums
 {
     public enum TransactionType
     {

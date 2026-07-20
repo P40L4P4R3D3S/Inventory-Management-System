@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Inventory_Managment_System.Domain.Exceptions
+namespace Inventory_Management_System.Api.Domain.Exceptions
 {
     public class LessInventoryException : Exception
     {

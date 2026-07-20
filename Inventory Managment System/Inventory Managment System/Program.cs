@@ -1,10 +1,11 @@
 ﻿using System;
 using System.IO;
 
-using Inventory_Managment_System.Application.Ports.Inbound;
-using Inventory_Managment_System.Application.Ports.Outbound;
-using Inventory_Managment_System.Application.Services;
-using Inventory_Managment_System.Infrastructure.Persistence;
+using Inventory_Management_System.Api.Application.Ports.Inbound;
+using Inventory_Management_System.Api.Application.Ports.Outbound;
+using Inventory_Management_System.Api.Application.Services;
+using Inventory_Management_System.Api.Infrastructure.Persistence;
+
 using Inventory_Managment_System.UI.Commands;
 using Inventory_Managment_System.UI.Input;
 using Inventory_Managment_System.UI.Menus;

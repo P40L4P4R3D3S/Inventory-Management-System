@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using Inventory_Managment_System.Application.Ports.Inbound;
-using Inventory_Managment_System.Domain.Models;
+using Inventory_Management_System.Api.Application.Ports.Inbound;
+using Inventory_Management_System.Api.Domain.Entities;
+
 using Inventory_Managment_System.UI.Enums;
 using Inventory_Managment_System.UI.Presenters;
 

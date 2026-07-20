@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace Inventory_Managment_System.Domain.Validation
+namespace Inventory_Management_System.Api.Domain.Validation
 {
     public static class Validators
     {

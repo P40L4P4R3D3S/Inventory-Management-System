@@ -1,8 +1,8 @@
 ﻿using System;
 
-using Inventory_Managment_System.Application.Ports.Inbound;
-using Inventory_Managment_System.Domain.Entities;
-using Inventory_Managment_System.Domain.Models;
+using Inventory_Management_System.Api.Application.Ports.Inbound;
+using Inventory_Management_System.Api.Domain.Entities;
+
 using Inventory_Managment_System.UI.Input;
 using Inventory_Managment_System.UI.Presenters;
 
