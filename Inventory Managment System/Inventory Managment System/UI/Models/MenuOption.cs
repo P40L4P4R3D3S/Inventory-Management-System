@@ -1,19 +1,24 @@
 ﻿using System;
 
+using Inventory_Managment_System.UI.Commands;
+
 namespace Inventory_Managment_System.UI.Models
 {
     public class MenuOption
     {
+        private readonly IConsoleCommand _command;
+
         public string Description { get; }
-        public Action Execute { get; }
 
-        public MenuOption(string description, Action execute)
+        public MenuOption(string description, IConsoleCommand command)
         {
-            Description = description
-                ?? throw new ArgumentNullException(nameof(description));
+            Description = description;
+            _command = command;
+        }
 
-            Execute = execute
-                ?? throw new ArgumentNullException(nameof(execute));
+        public void Execute()
+        {
+            _command.Execute();
         }
     }
 }

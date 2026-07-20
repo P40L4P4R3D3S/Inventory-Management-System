@@ -10,7 +10,7 @@ using Inventory_Managment_System.Domain.Models;
 
 namespace Inventory_Managment_System.Application.Services
 {
-    internal class InventoryService : IInventoryService
+    public class InventoryService : IInventoryService
     {
         private readonly List<Product> _products;
         private readonly List<InventoryTransaction> _transactions;
