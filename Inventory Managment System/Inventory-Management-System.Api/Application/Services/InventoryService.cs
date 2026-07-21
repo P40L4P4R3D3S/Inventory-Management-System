@@ -6,6 +6,7 @@ using Inventory_Management_System.Api.Application.Ports.Outbound;
 using Inventory_Management_System.Api.Domain.Entities;
 using Inventory_Management_System.Api.Domain.Enums;
 using Inventory_Management_System.Api.Domain.Exceptions;
+using Inventory_Management_System.Api.Domain.Validation;
 
 namespace Inventory_Management_System.Api.Application.Services
 {
@@ -93,6 +94,31 @@ namespace Inventory_Management_System.Api.Application.Services
             return _products.OrderBy(p => p.Price).ToList();
         }
 
+        public IReadOnlyList<Product> GetAllProducts(int pageNumber, int pageSize)
+        {
+            Validators.ValidatePagination(pageNumber, pageSize);
+
+            return _products
+                .OrderBy(product => product.Price)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+        }
+
+        public int GetProductsCount(string? name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                return _products.Count;
+            }
+
+            string normalizedName = name.Trim();
+
+            return _products.Count(product =>
+                product.Name.Contains(normalizedName, StringComparison.OrdinalIgnoreCase)
+            );
+        }
+
         public Product GetProductById(int id)
         {
             if (id <= 0)
@@ -137,6 +163,31 @@ namespace Inventory_Management_System.Api.Application.Services
                 .Where(product =>
                     product.Name.Contains(normalizedName, StringComparison.OrdinalIgnoreCase)
                 )
+                .ToList();
+        }
+
+        public IReadOnlyList<Product> SearchProductsByName(
+            string name,
+            int pageNumber,
+            int pageSize
+        )
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentException("Product name cannot be empty.", nameof(name));
+            }
+
+            Validators.ValidatePagination(pageNumber, pageSize);
+
+            string normalizedName = name.Trim();
+
+            return _products
+                .Where(product =>
+                    product.Name.Contains(normalizedName, StringComparison.OrdinalIgnoreCase)
+                )
+                .OrderBy(product => product.Price)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
                 .ToList();
         }
 

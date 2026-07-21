@@ -8,11 +8,14 @@ namespace Inventory_Management_System.Api.Application.Ports.Inbound
     {
         void AddProduct(Product product);
         IReadOnlyList<Product> GetAllProducts();
+        IReadOnlyList<Product> GetAllProducts(int pageNumber, int pageSize);
+        IReadOnlyList<Product> SearchProductsByName(string name, int pageNumber, int pageSize);
         IReadOnlyList<Product> SearchProductsByName(string name);
         Product GetProductById(int id);
         Product GetProductBySku(string sku);
         void UpdateProduct(int id, decimal? price, string? name, string? description);
         void DeleteProduct(int id);
+        int GetProductsCount(string? name);
 
         InventoryLot ReceiveProduct(
             string sku,

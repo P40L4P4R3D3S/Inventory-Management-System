@@ -68,5 +68,32 @@ namespace Inventory_Management_System.Api.Domain.Validation
                 );
             }
         }
+
+        public static void ValidatePagination(int pageNumber, int pageSize)
+        {
+            if (pageNumber <= 0)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(pageNumber),
+                    "Page number must be greater than zero."
+                );
+            }
+
+            if (pageSize <= 0)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(pageSize),
+                    "Page size must be greater than zero."
+                );
+            }
+
+            if (pageSize > 100)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(pageSize),
+                    "Page size cannot be greater than 100."
+                );
+            }
+        }
     }
 }

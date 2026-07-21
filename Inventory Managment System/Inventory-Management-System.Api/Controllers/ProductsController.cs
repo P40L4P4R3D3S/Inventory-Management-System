@@ -24,19 +24,33 @@ namespace Inventory_Management_System.Api.Controllers
         }
 
         [HttpGet]
-        [ProducesResponseType(typeof(IReadOnlyList<ProductResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(PaginatedResponse<ProductResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public ActionResult<IReadOnlyList<ProductResponse>> GetAll([FromQuery] string? name)
+        public ActionResult<PaginatedResponse<ProductResponse>> GetAll(
+            [FromQuery] string? name,
+            [FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 10
+        )
         {
             try
             {
                 IReadOnlyList<Product> products = string.IsNullOrWhiteSpace(name)
-                    ? _inventoryService.GetAllProducts()
-                    : _inventoryService.SearchProductsByName(name);
+                    ? _inventoryService.GetAllProducts(pageNumber, pageSize)
+                    : _inventoryService.SearchProductsByName(name, pageNumber, pageSize);
 
-                IReadOnlyList<ProductResponse> response = products
-                    .Select(ProductResponse.FromDomain)
-                    .ToList();
+                int totalItems = _inventoryService.GetProductsCount(name);
+
+                int totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+
+                PaginatedResponse<ProductResponse> response = new()
+                {
+                    Items = products.Select(ProductResponse.FromDomain).ToList(),
+
+                    PageNumber = pageNumber,
+                    PageSize = pageSize,
+                    TotalItems = totalItems,
+                    TotalPages = totalPages,
+                };
 
                 return Ok(response);
             }
