@@ -22,7 +22,7 @@ namespace Inventory_Management_System.Api.Domain.Validation
 
         public static void ValidatePrice(decimal price)
         {
-            if (price < 0)
+            if (price <= 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(price), "Price cannot be negative.");
             }

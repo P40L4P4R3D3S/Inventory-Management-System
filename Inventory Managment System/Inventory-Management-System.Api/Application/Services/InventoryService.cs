@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using Inventory_Management_System.Api.Application.Ports.Inbound;
 using Inventory_Management_System.Api.Application.Ports.Outbound;
 using Inventory_Management_System.Api.Domain.Entities;
@@ -24,67 +23,63 @@ namespace Inventory_Management_System.Api.Application.Services
 
         public InventoryService(
             IProductRepository productRepository,
-            ITransactionRepository transactionRepository)
+            ITransactionRepository transactionRepository
+        )
         {
             _productRepository =
-                productRepository
-                ?? throw new ArgumentNullException(
-                    nameof(productRepository));
-
+                productRepository ?? throw new ArgumentNullException(nameof(productRepository));
             _transactionRepository =
                 transactionRepository
-                ?? throw new ArgumentNullException(
-                    nameof(transactionRepository));
+                ?? throw new ArgumentNullException(nameof(transactionRepository));
 
-            _products =
-                _productRepository.GetAll().ToList();
-
-            _transactions =
-                _transactionRepository.GetAll().ToList();
-
+            _products = _productRepository.GetAll().ToList();
+            _transactions = _transactionRepository.GetAll().ToList();
             _nextProductId = GetNextProductId();
             _nextLotId = GetNextLotId();
             _nextTransactionId = GetNextTransactionId();
         }
+
         private int GetNextLotId()
         {
-            int maximumLotId =
-                _products
-                    .SelectMany(product => product.Lots)
-                    .Select(lot => lot.Id)
-                    .DefaultIfEmpty(0)
-                    .Max();
+            int maximumLotId = _products
+                .SelectMany(product => product.Lots)
+                .Select(lot => lot.Id)
+                .DefaultIfEmpty(0)
+                .Max();
 
             return maximumLotId + 1;
         }
+
         private int GetNextProductId()
         {
-            return _products
-                .Select(product => product.Id)
-                .DefaultIfEmpty(0)
-                .Max() + 1;
+            return _products.Select(product => product.Id).DefaultIfEmpty(0).Max() + 1;
         }
+
         private int GetNextTransactionId()
         {
-            return _transactions
-                .Select(transaction => transaction.Id)
-                .DefaultIfEmpty(0)
-                .Max() + 1;
+            return _transactions.Select(transaction => transaction.Id).DefaultIfEmpty(0).Max() + 1;
         }
 
         public void AddProduct(Product product)
         {
             ArgumentNullException.ThrowIfNull(product);
 
+            bool nameExists = _products.Any(existingProduct =>
+                existingProduct.Name.Equals(product.Name, StringComparison.OrdinalIgnoreCase)
+            );
+
+            if (nameExists)
+            {
+                throw new DuplicateException("name", product.Name);
+            }
+
             bool skuExists = _products.Any(existingProduct =>
-                existingProduct.SKU.Equals(
-                    product.SKU,
-                    StringComparison.OrdinalIgnoreCase));
+                existingProduct.SKU.Equals(product.SKU, StringComparison.OrdinalIgnoreCase)
+            );
 
             if (skuExists)
             {
-                throw new DuplicateSkuException(
-                    product.SKU);
+                throw new DuplicateException("SKU", product.SKU);
             }
 
             product.AssignId(_nextProductId++);
@@ -95,7 +90,7 @@ namespace Inventory_Management_System.Api.Application.Services
 
         public IReadOnlyList<Product> GetAllProducts()
         {
-            return _products.ToList();
+            return _products.OrderBy(p => p.Price).ToList();
         }
 
         public Product GetProductById(int id)
@@ -104,74 +99,79 @@ namespace Inventory_Management_System.Api.Application.Services
             {
                 throw new ArgumentOutOfRangeException(
                     nameof(id),
-                    "Product ID must be greater than zero.");
+                    "Product ID must be greater than zero."
+                );
             }
 
             return FindProduct(
                 product => product.Id == id,
-                $"Product with ID '{id}' was not found.");
+                $"Product with ID '{id}' was not found."
+            );
         }
 
         public Product GetProductBySku(string sku)
         {
             if (string.IsNullOrWhiteSpace(sku))
             {
-                throw new ArgumentException(
-                    "SKU cannot be empty.",
-                    nameof(sku));
+                throw new ArgumentException("SKU cannot be empty.", nameof(sku));
             }
 
             string normalizedSku = sku.Trim();
 
             return FindProduct(
-                product => product.SKU.Equals(
-                    normalizedSku,
-                    StringComparison.OrdinalIgnoreCase),
-                $"Product with SKU '{normalizedSku}' was not found.");
+                product => product.SKU.Equals(normalizedSku, StringComparison.OrdinalIgnoreCase),
+                $"Product with SKU '{normalizedSku}' was not found."
+            );
         }
 
-        public IReadOnlyList<Product> SearchProductsByName(
-            string name)
+        public IReadOnlyList<Product> SearchProductsByName(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new ArgumentException(
-                    "Product name cannot be empty.",
-                    nameof(name));
+                throw new ArgumentException("Product name cannot be empty.", nameof(name));
             }
 
             string normalizedName = name.Trim();
 
             return _products
                 .Where(product =>
-                    product.Name.Contains(
-                        normalizedName,
-                        StringComparison.OrdinalIgnoreCase))
+                    product.Name.Contains(normalizedName, StringComparison.OrdinalIgnoreCase)
+                )
                 .ToList();
         }
 
-        public void UpdateProduct(
-            int id,
-            decimal price)
+        public void UpdateProduct(int id, decimal? price, string? name, string? description)
         {
-            Product product =
-                GetProductById(id);
+            Product product = GetProductById(id);
 
-            product.UpdatePrice(price);
+            if (price.HasValue)
+            {
+                product.UpdatePrice(price.Value);
+            }
+
+            product.UpdateName(name);
+            product.UpdateDescription(description);
 
             _productRepository.SaveAll(_products);
         }
 
-        public InventoryLot ReceiveProduct(
-        string sku,
-        string lotNumber,
-        int quantity,
-        DateTime receivedDate,
-        DateTime? expirationDate,
-        string supplier)
+        public void DeleteProduct(int id)
         {
-            Product product =
-                GetProductBySku(sku);
+            Product product = GetProductById(id);
+            _products.Remove(product);
+            _productRepository.SaveAll(_products);
+        }
+
+        public InventoryLot ReceiveProduct(
+            string sku,
+            string lotNumber,
+            int quantity,
+            DateTime receivedDate,
+            DateTime? expirationDate,
+            string supplier
+        )
+        {
+            Product product = GetProductBySku(sku);
 
             InventoryLot lot = new(
                 lotNumber,
@@ -179,7 +179,8 @@ namespace Inventory_Management_System.Api.Application.Services
                 product.Price,
                 receivedDate,
                 expirationDate,
-                supplier);
+                supplier
+            );
 
             lot.AssignId(_nextLotId++);
 
@@ -191,59 +192,43 @@ namespace Inventory_Management_System.Api.Application.Services
                 lot.Id,
                 TransactionType.Receive,
                 quantity,
-                DateTime.Now);
+                DateTime.Now
+            );
 
             _transactions.Add(transaction);
 
             _productRepository.SaveAll(_products);
-            _transactionRepository.SaveAll(
-                _transactions);
+            _transactionRepository.SaveAll(_transactions);
 
             return lot;
         }
 
-        public InventoryLot GetLot(
-            string sku,
-            string lotNumber)
+        public InventoryLot GetLot(string sku, string lotNumber)
         {
-            Product product =
-                GetProductBySku(sku);
+            Product product = GetProductBySku(sku);
 
-            return product.GetLotByNumber(
-                lotNumber);
+            return product.GetLotByNumber(lotNumber);
         }
 
         public IReadOnlyList<InventoryLot> GetProductLots(string sku)
         {
-            Product product =
-                GetProductBySku(sku);
+            Product product = GetProductBySku(sku);
 
             return product.Lots;
         }
 
-        private Product FindProduct(
-            Func<Product, bool> condition,
-            string errorMessage)
+        private Product FindProduct(Func<Product, bool> condition, string errorMessage)
         {
             ArgumentNullException.ThrowIfNull(condition);
 
-            return _products.FirstOrDefault(condition)
-                ?? throw new NotFoundException(
-                    errorMessage);
+            return _products.FirstOrDefault(condition) ?? throw new NotFoundException(errorMessage);
         }
 
-        public InventoryLot ShipProduct(
-        string sku,
-        string lotNumber,
-        int quantity)
+        public InventoryLot ShipProduct(string sku, string lotNumber, int quantity)
         {
-            Product product =
-                GetProductBySku(sku);
+            Product product = GetProductBySku(sku);
 
-            InventoryLot lot =
-                product.ShipFromLot(
-                    lotNumber,
-                    quantity);
+            InventoryLot lot = product.ShipFromLot(lotNumber, quantity);
 
             InventoryTransaction transaction = new(
                 _nextTransactionId++,
@@ -251,13 +236,13 @@ namespace Inventory_Management_System.Api.Application.Services
                 lot.Id,
                 TransactionType.Ship,
                 quantity,
-                DateTime.Now);
+                DateTime.Now
+            );
 
             _transactions.Add(transaction);
 
             _productRepository.SaveAll(_products);
-            _transactionRepository.SaveAll(
-                _transactions);
+            _transactionRepository.SaveAll(_transactions);
 
             return lot;
         }

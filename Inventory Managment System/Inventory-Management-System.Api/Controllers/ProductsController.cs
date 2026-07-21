@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using Inventory_Management_System.Api.Application.Ports.Inbound;
 using Inventory_Management_System.Api.Domain.Entities;
 using Inventory_Management_System.Api.Domain.Exceptions;
 using Inventory_Management_System.Api.Models.Requests;
 using Inventory_Management_System.Api.Models.Responses;
-
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,20 +19,31 @@ namespace Inventory_Management_System.Api.Controllers
 
         public ProductsController(IInventoryService inventoryService)
         {
-            _inventoryService = inventoryService
-                ?? throw new ArgumentNullException(nameof(inventoryService));
+            _inventoryService =
+                inventoryService ?? throw new ArgumentNullException(nameof(inventoryService));
         }
 
         [HttpGet]
         [ProducesResponseType(typeof(IReadOnlyList<ProductResponse>), StatusCodes.Status200OK)]
-        public ActionResult<IReadOnlyList<ProductResponse>> GetAll()
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public ActionResult<IReadOnlyList<ProductResponse>> GetAll([FromQuery] string? name)
         {
-            IReadOnlyList<ProductResponse> response = _inventoryService
-                    .GetAllProducts()
+            try
+            {
+                IReadOnlyList<Product> products = string.IsNullOrWhiteSpace(name)
+                    ? _inventoryService.GetAllProducts()
+                    : _inventoryService.SearchProductsByName(name);
+
+                IReadOnlyList<ProductResponse> response = products
                     .Select(ProductResponse.FromDomain)
                     .ToList();
 
-            return Ok(response);
+                return Ok(response);
+            }
+            catch (ArgumentException exception)
+            {
+                return BadRequest(new { message = exception.Message });
+            }
         }
 
         [HttpGet("{id:int}")]
@@ -71,35 +80,70 @@ namespace Inventory_Management_System.Api.Controllers
                     request.Name,
                     request.Description,
                     request.Price,
-                    request.SKU);
+                    request.SKU
+                );
 
                 _inventoryService.AddProduct(product);
 
                 ProductResponse response = ProductResponse.FromDomain(product);
 
-                return CreatedAtAction(
-                    nameof(GetById),
-                    new
-                    {
-                        id = product.Id
-                    },
-                    response);
+                return CreatedAtAction(nameof(GetById), new { id = product.Id }, response);
             }
-            catch (DuplicateSkuException exception)
+            catch (DuplicateException exception)
             {
-                return Conflict(
-                    new
-                    {
-                        message = exception.Message
-                    });
+                return Conflict(new { message = exception.Message });
             }
             catch (ArgumentException exception)
             {
-                return BadRequest(
-                    new
-                    {
-                        message = exception.Message
-                    });
+                return BadRequest(new { message = exception.Message });
+            }
+        }
+
+        [HttpPut("{id:int}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public IActionResult UpdateProduct(int id, UpdateProductRequest request)
+        {
+            try
+            {
+                _inventoryService.UpdateProduct(
+                    id,
+                    request.Price,
+                    request.Name,
+                    request.Description
+                );
+
+                return NoContent();
+            }
+            catch (ArgumentOutOfRangeException exception)
+            {
+                return BadRequest(new { message = exception.Message });
+            }
+            catch (NotFoundException exception)
+            {
+                return NotFound(new { message = exception.Message });
+            }
+        }
+
+        [HttpDelete("{id:int}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public IActionResult DeleteProduct(int id)
+        {
+            try
+            {
+                _inventoryService.DeleteProduct(id);
+                return NoContent();
+            }
+            catch (ArgumentOutOfRangeException exception)
+            {
+                return BadRequest(new { message = exception.Message });
+            }
+            catch (NotFoundException exception)
+            {
+                return NotFound(new { message = exception.Message });
             }
         }
     }

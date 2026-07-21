@@ -2,9 +2,9 @@
 
 namespace Inventory_Management_System.Api.Domain.Exceptions
 {
-    public class DuplicateSkuException : Exception
+    public class DuplicateException : Exception
     {
-        public DuplicateSkuException(string sku)
-            : base($"A product with SKU '{sku}' already exists.") { }
+        public DuplicateException(string dataname, string data)
+            : base($"A product with {dataname}: '{data}' already exists.") { }
     }
 }

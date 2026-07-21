@@ -44,9 +44,13 @@ namespace Inventory_Managment_System.UI.Commands
 
             int id = _consoleInput.ReadInteger("Select a product by Id: ");
 
+            string name = _consoleInput.ReadOptionalString("Name: ");
+
+            string description = _consoleInput.ReadOptionalString("Description: ");
+
             decimal price = _consoleInput.ReadDecimal("New price: ");
 
-            _inventoryService.UpdateProduct(id, price);
+            _inventoryService.UpdateProduct(id, price == 0 ? 0 : price, name, description);
 
             Console.WriteLine("Product updated successfully.");
         }

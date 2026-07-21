@@ -66,6 +66,22 @@ namespace Inventory_Management_System.Api.Domain.Entities
             Price = price;
         }
 
+        public void UpdateName(string? name)
+        {
+            if (!string.IsNullOrWhiteSpace(name))
+            {
+                Name = name.Trim();
+            }
+        }
+
+        public void UpdateDescription(string? description)
+        {
+            if (!string.IsNullOrWhiteSpace(description))
+            {
+                Description = description.Trim();
+            }
+        }
+
         public void AddLot(InventoryLot lot)
         {
             ArgumentNullException.ThrowIfNull(lot);
