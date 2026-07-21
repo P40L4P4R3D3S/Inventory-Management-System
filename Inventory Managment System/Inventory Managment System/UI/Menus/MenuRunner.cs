@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-
 using Inventory_Managment_System.UI.Models;
 
 namespace Inventory_Managment_System.UI.Menus
@@ -11,15 +10,12 @@ namespace Inventory_Managment_System.UI.Menus
             string title,
             IReadOnlyDictionary<string, MenuOption> options,
             string exitOption,
-            string exitDescription)
+            string exitDescription
+        )
         {
             while (true)
             {
-                ShowMenu(
-                    title,
-                    options,
-                    exitOption,
-                    exitDescription);
+                ShowMenu(title, options, exitOption, exitDescription);
 
                 string selectedOption = Console.ReadLine()?.Trim() ?? string.Empty;
 
@@ -41,8 +37,7 @@ namespace Inventory_Managment_System.UI.Menus
                 }
                 catch (Exception exception)
                 {
-                    Console.WriteLine(
-                        $"Error: {exception.Message}");
+                    Console.WriteLine($"Error: {exception.Message}");
                 }
             }
         }
@@ -51,24 +46,20 @@ namespace Inventory_Managment_System.UI.Menus
             string title,
             IReadOnlyDictionary<string, MenuOption> options,
             string exitOption,
-            string exitDescription)
+            string exitDescription
+        )
         {
             Console.WriteLine();
             Console.WriteLine(title);
 
-            foreach (
-                KeyValuePair<string, MenuOption> option
-                in options)
+            foreach (KeyValuePair<string, MenuOption> option in options)
             {
-                Console.WriteLine(
-                    $"{option.Key}. " +
-                    $"{option.Value.Description}");
+                Console.WriteLine($"{option.Key}. " + $"{option.Value.Description}");
             }
 
             Console.WriteLine($"{exitOption}. {exitDescription}");
 
-            Console.Write(
-                "Choose an option: ");
+            Console.Write("Choose an option: ");
         }
     }
 }

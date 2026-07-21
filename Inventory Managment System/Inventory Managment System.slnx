@@ -1,5 +1,6 @@
 <Solution>
   <Folder Name="/Solution Items/">
+    <File Path=".csharpierrc.json" />
     <File Path=".editorconfig" />
   </Folder>
   <Project Path="Inventory Managment System/Inventory Managment System.csproj" />

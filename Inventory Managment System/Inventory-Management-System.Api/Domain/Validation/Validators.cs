@@ -8,9 +8,7 @@ namespace Inventory_Management_System.Api.Domain.Validation
         {
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new ArgumentException(
-                    "Product name cannot be empty.",
-                    nameof(name));
+                throw new ArgumentException("Product name cannot be empty.", nameof(name));
             }
         }
 
@@ -18,9 +16,7 @@ namespace Inventory_Management_System.Api.Domain.Validation
         {
             if (string.IsNullOrWhiteSpace(sku))
             {
-                throw new ArgumentException(
-                    "SKU cannot be empty.",
-                    nameof(sku));
+                throw new ArgumentException("SKU cannot be empty.", nameof(sku));
             }
         }
 
@@ -28,9 +24,7 @@ namespace Inventory_Management_System.Api.Domain.Validation
         {
             if (price < 0)
             {
-                throw new ArgumentOutOfRangeException(
-                    nameof(price),
-                    "Price cannot be negative.");
+                throw new ArgumentOutOfRangeException(nameof(price), "Price cannot be negative.");
             }
         }
 
@@ -40,7 +34,8 @@ namespace Inventory_Management_System.Api.Domain.Validation
             {
                 throw new ArgumentOutOfRangeException(
                     nameof(quantity),
-                    "Quantity cannot be negative.");
+                    "Quantity cannot be negative."
+                );
             }
         }
 
@@ -48,9 +43,7 @@ namespace Inventory_Management_System.Api.Domain.Validation
         {
             if (string.IsNullOrWhiteSpace(lotNumber))
             {
-                throw new ArgumentException(
-                    "Lot number cannot be empty.",
-                    nameof(lotNumber));
+                throw new ArgumentException("Lot number cannot be empty.", nameof(lotNumber));
             }
         }
 
@@ -60,18 +53,19 @@ namespace Inventory_Management_System.Api.Domain.Validation
             {
                 throw new ArgumentOutOfRangeException(
                     nameof(unitCost),
-                    "Unit cost cannot be negative.");
+                    "Unit cost cannot be negative."
+                );
             }
         }
 
         public static void ValidateExpDate(DateTime? expirationDate, DateTime receivedDate)
         {
-            if (expirationDate.HasValue &&
-                expirationDate.Value.Date < receivedDate.Date)
+            if (expirationDate.HasValue && expirationDate.Value.Date < receivedDate.Date)
             {
                 throw new ArgumentException(
                     "Expiration date cannot be before the received date.",
-                    nameof(expirationDate));
+                    nameof(expirationDate)
+                );
             }
         }
     }

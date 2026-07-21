@@ -1,11 +1,9 @@
 ﻿using System;
 using System.IO;
-
 using Inventory_Management_System.Api.Application.Ports.Inbound;
 using Inventory_Management_System.Api.Application.Ports.Outbound;
 using Inventory_Management_System.Api.Application.Services;
 using Inventory_Management_System.Api.Infrastructure.Persistence;
-
 using Inventory_Managment_System.UI.Commands;
 using Inventory_Managment_System.UI.Input;
 using Inventory_Managment_System.UI.Menus;
@@ -15,8 +13,7 @@ class Program
 {
     public static void Main(string[] args)
     {
-        string dataDirectory =
-            Path.Combine(AppContext.BaseDirectory, "Data");
+        string dataDirectory = Path.Combine(AppContext.BaseDirectory, "Data");
 
         string productsPath = Path.Combine(dataDirectory, "Products.json");
 
@@ -33,24 +30,50 @@ class Program
         ProductConsolePresenter productPresenter = new ProductConsolePresenter();
         LotConsolePresenter lotPresenter = new LotConsolePresenter();
 
-        IInventoryService inventoryService = new InventoryService(productRepository, transactionRepository);
+        IInventoryService inventoryService = new InventoryService(
+            productRepository,
+            transactionRepository
+        );
         IConsoleInput consoleInput = new ConsoleInput();
         IConsoleCommand addProductCommand = new AddProductCommand(inventoryService, consoleInput);
-        IConsoleCommand showProductsCommand = new ShowProductsCommand(inventoryService, productPresenter);
+        IConsoleCommand showProductsCommand = new ShowProductsCommand(
+            inventoryService,
+            productPresenter
+        );
         IConsoleCommand receiveProductCommand = new ReceiveProductCommand(
-            inventoryService, consoleInput, lotPresenter);
+            inventoryService,
+            consoleInput,
+            lotPresenter
+        );
         IConsoleCommand searchByNameCommand = new SearchByNameCommand(
-            inventoryService, consoleInput, productPresenter);
+            inventoryService,
+            consoleInput,
+            productPresenter
+        );
         IConsoleCommand searchBySkuCommand = new SearchBySkuCommand(
-            inventoryService, consoleInput, productPresenter);
+            inventoryService,
+            consoleInput,
+            productPresenter
+        );
         IConsoleCommand searchProductsMenuCommand = new SearchProductsMenuCommand(
-            searchByNameCommand, searchBySkuCommand);
+            searchByNameCommand,
+            searchBySkuCommand
+        );
         IConsoleCommand updateProductCommand = new UpdateProductCommand(
-            inventoryService, consoleInput, productPresenter);
+            inventoryService,
+            consoleInput,
+            productPresenter
+        );
         IConsoleCommand productDetailCommand = new ProductDetailCommand(
-            inventoryService, consoleInput, productPresenter);
+            inventoryService,
+            consoleInput,
+            productPresenter
+        );
         IConsoleCommand shipProductCommand = new ShipProductCommand(
-            inventoryService, consoleInput, lotPresenter);
+            inventoryService,
+            consoleInput,
+            lotPresenter
+        );
 
         ConsoleMenu ui = new ConsoleMenu(
             addProductCommand,
@@ -59,7 +82,8 @@ class Program
             updateProductCommand,
             receiveProductCommand,
             shipProductCommand,
-            productDetailCommand);
+            productDetailCommand
+        );
 
         Console.WriteLine("Application ready.");
 

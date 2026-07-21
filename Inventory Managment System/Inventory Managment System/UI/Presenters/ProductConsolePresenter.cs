@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-
 using Inventory_Management_System.Api.Domain.Entities;
-
 using Inventory_Managment_System.UI.Enums;
 
 namespace Inventory_Managment_System.UI.Presenters
@@ -11,8 +9,8 @@ namespace Inventory_Managment_System.UI.Presenters
     {
         public void ShowProductList(
             IReadOnlyList<Product> products,
-            ProductDisplayMode displayMode =
-                ProductDisplayMode.Detailed)
+            ProductDisplayMode displayMode = ProductDisplayMode.Detailed
+        )
         {
             if (products.Count == 0)
             {
@@ -24,16 +22,15 @@ namespace Inventory_Managment_System.UI.Presenters
 
             string header = displayMode switch
             {
-                ProductDisplayMode.Summary =>
-                    "ID | Name | SKU",
+                ProductDisplayMode.Summary => "ID | Name | SKU",
 
-                ProductDisplayMode.Detailed =>
-                    "ID | Name | Description | SKU | Price",
+                ProductDisplayMode.Detailed => "ID | Name | Description | SKU | Price",
 
                 _ => throw new ArgumentOutOfRangeException(
                     nameof(displayMode),
                     displayMode,
-                    "Invalid product display mode.")
+                    "Invalid product display mode."
+                ),
             };
 
             Console.WriteLine(header);
@@ -46,27 +43,26 @@ namespace Inventory_Managment_System.UI.Presenters
 
         public void ShowProduct(
             Product product,
-            ProductDisplayMode displayMode =
-                ProductDisplayMode.Detailed)
+            ProductDisplayMode displayMode = ProductDisplayMode.Detailed
+        )
         {
             string productInformation = displayMode switch
             {
-                ProductDisplayMode.Summary =>
-                    $"{product.Id} | " +
-                    $"{product.Name} | " +
-                    $"{product.SKU}",
+                ProductDisplayMode.Summary => $"{product.Id} | "
+                    + $"{product.Name} | "
+                    + $"{product.SKU}",
 
-                ProductDisplayMode.Detailed =>
-                    $"{product.Id} | " +
-                    $"{product.Name} | " +
-                    $"{product.Description} | " +
-                    $"{product.SKU} | " +
-                    $"{product.Price:F2}",
+                ProductDisplayMode.Detailed => $"{product.Id} | "
+                    + $"{product.Name} | "
+                    + $"{product.Description} | "
+                    + $"{product.SKU} | "
+                    + $"{product.Price:F2}",
 
                 _ => throw new ArgumentOutOfRangeException(
                     nameof(displayMode),
                     displayMode,
-                    "Invalid product display mode.")
+                    "Invalid product display mode."
+                ),
             };
 
             Console.WriteLine(productInformation);

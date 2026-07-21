@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Text.Json.Serialization;
-
 using Inventory_Management_System.Api.Domain.Exceptions;
 using Inventory_Management_System.Api.Domain.Validation;
 
@@ -37,8 +36,7 @@ namespace Inventory_Management_System.Api.Domain.Entities
 
         [JsonIgnore]
         public bool IsExpired =>
-            ExpirationDate.HasValue &&
-            ExpirationDate.Value.Date < DateTime.Today;
+            ExpirationDate.HasValue && ExpirationDate.Value.Date < DateTime.Today;
 
         public InventoryLot(
             string lotNumber,
@@ -46,7 +44,8 @@ namespace Inventory_Management_System.Api.Domain.Entities
             decimal unitCost,
             DateTime receivedDate,
             DateTime? expirationDate = null,
-            string supplier = "")
+            string supplier = ""
+        )
         {
             Validators.ValidateLotNumber(lotNumber);
             Validators.ValidatePositiveQuantity(quantity);
@@ -68,13 +67,13 @@ namespace Inventory_Management_System.Api.Domain.Entities
             {
                 throw new ArgumentOutOfRangeException(
                     nameof(id),
-                    "Lot ID must be greater than zero.");
+                    "Lot ID must be greater than zero."
+                );
             }
 
             if (Id != 0)
             {
-                throw new InvalidOperationException(
-                    "The lot already has an ID.");
+                throw new InvalidOperationException("The lot already has an ID.");
             }
 
             Id = id;
@@ -89,8 +88,7 @@ namespace Inventory_Management_System.Api.Domain.Entities
 
             if (QuantityOnHand < quantity)
             {
-                throw new LessInventoryException(
-                    QuantityOnHand);
+                throw new LessInventoryException(QuantityOnHand);
             }
 
             QuantityOnHand -= quantity;

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-
 using Inventory_Managment_System.UI.Menus;
 using Inventory_Managment_System.UI.Models;
 
@@ -12,24 +11,17 @@ namespace Inventory_Managment_System.UI.Commands
 
         public SearchProductsMenuCommand(
             IConsoleCommand searchByNameCommand,
-            IConsoleCommand searchBySkuCommand)
+            IConsoleCommand searchBySkuCommand
+        )
         {
-            ArgumentNullException.ThrowIfNull(
-                searchByNameCommand);
+            ArgumentNullException.ThrowIfNull(searchByNameCommand);
 
-            ArgumentNullException.ThrowIfNull(
-                searchBySkuCommand);
+            ArgumentNullException.ThrowIfNull(searchBySkuCommand);
 
             _searchOptions = new Dictionary<string, MenuOption>
             {
-                {
-                    "1",
-                    new MenuOption("Search by name", searchByNameCommand)
-                },
-                {
-                    "2",
-                    new MenuOption("Search by SKU", searchBySkuCommand)
-                }
+                { "1", new MenuOption("Search by name", searchByNameCommand) },
+                { "2", new MenuOption("Search by SKU", searchBySkuCommand) },
             };
         }
 
@@ -39,7 +31,8 @@ namespace Inventory_Managment_System.UI.Commands
                 title: "Search Options",
                 options: _searchOptions,
                 exitOption: "3",
-                exitDescription: "Back");
+                exitDescription: "Back"
+            );
         }
     }
 }

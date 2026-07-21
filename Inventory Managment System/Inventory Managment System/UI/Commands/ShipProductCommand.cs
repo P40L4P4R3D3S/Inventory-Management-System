@@ -1,8 +1,6 @@
 ﻿using System;
-
 using Inventory_Management_System.Api.Application.Ports.Inbound;
 using Inventory_Management_System.Api.Domain.Entities;
-
 using Inventory_Managment_System.UI.Input;
 using Inventory_Managment_System.UI.Presenters;
 
@@ -17,7 +15,8 @@ namespace Inventory_Managment_System.UI.Commands
         public ShipProductCommand(
             IInventoryService inventoryService,
             IConsoleInput consoleInput,
-            LotConsolePresenter lotPresenter)
+            LotConsolePresenter lotPresenter
+        )
         {
             _inventoryService = inventoryService;
             _consoleInput = consoleInput;
@@ -26,12 +25,9 @@ namespace Inventory_Managment_System.UI.Commands
 
         public void Execute()
         {
-            string sku =
-                _consoleInput.ReadRequiredString(
-                    "Enter the product SKU: ");
+            string sku = _consoleInput.ReadRequiredString("Enter the product SKU: ");
 
-            Product? product =
-                _inventoryService.GetProductBySku(sku);
+            Product? product = _inventoryService.GetProductBySku(sku);
 
             if (product is null)
             {

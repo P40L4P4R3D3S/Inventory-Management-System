@@ -1,5 +1,4 @@
 ﻿using System;
-
 using Inventory_Management_System.Api.Application.Ports.Inbound;
 using Inventory_Management_System.Api.Domain.Entities;
 using Inventory_Managment_System.UI.Input;
@@ -16,7 +15,8 @@ namespace Inventory_Managment_System.UI.Commands
         public ProductDetailCommand(
             IInventoryService inventoryService,
             IConsoleInput consoleInput,
-            ProductConsolePresenter productPresenter)
+            ProductConsolePresenter productPresenter
+        )
         {
             _inventoryService = inventoryService;
             _consoleInput = consoleInput;

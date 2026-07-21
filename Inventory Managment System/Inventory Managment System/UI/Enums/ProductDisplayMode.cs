@@ -3,6 +3,6 @@
     public enum ProductDisplayMode
     {
         Summary,
-        Detailed
+        Detailed,
     }
 }

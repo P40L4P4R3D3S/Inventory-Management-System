@@ -1,5 +1,4 @@
 ﻿using System;
-
 using Inventory_Management_System.Api.Domain.Enums;
 
 namespace Inventory_Management_System.Api.Domain.Entities
@@ -19,7 +18,8 @@ namespace Inventory_Management_System.Api.Domain.Entities
             int lotId,
             TransactionType type,
             int quantity,
-            DateTime transactionDate)
+            DateTime transactionDate
+        )
         {
             Id = id;
             ProductId = productId;

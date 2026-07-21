@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
-
 using Inventory_Management_System.Api.Application.Ports.Inbound;
 using Inventory_Management_System.Api.Domain.Entities;
-
 using Inventory_Managment_System.UI.Input;
 using Inventory_Managment_System.UI.Presenters;
 
@@ -17,7 +15,8 @@ namespace Inventory_Managment_System.UI.Commands
         public SearchByNameCommand(
             IInventoryService inventoryService,
             IConsoleInput consoleInput,
-            ProductConsolePresenter productPresenter)
+            ProductConsolePresenter productPresenter
+        )
         {
             _inventoryService = inventoryService;
             _consoleInput = consoleInput;

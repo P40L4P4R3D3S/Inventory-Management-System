@@ -2,40 +2,35 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Serialization;
-
 using Inventory_Management_System.Api.Domain.Exceptions;
 using Inventory_Management_System.Api.Domain.Validation;
-
 
 namespace Inventory_Management_System.Api.Domain.Entities
 {
     public class Product
     {
-        [JsonInclude]
-        [JsonPropertyName("lots")]
         private readonly List<InventoryLot> _lots = [];
+
         [JsonInclude]
         public int Id { get; private set; }
+
         [JsonInclude]
         public string Name { get; private set; }
+
         [JsonInclude]
         public string Description { get; private set; }
+
         [JsonInclude]
         public decimal Price { get; private set; }
+
         [JsonInclude]
         public string SKU { get; private set; }
 
-        public IReadOnlyList<InventoryLot> Lots =>
-            _lots.AsReadOnly();
+        public IReadOnlyList<InventoryLot> Lots => _lots.AsReadOnly();
 
-        public int QuantityOnHand =>
-            _lots.Sum(lot => lot.QuantityOnHand);
+        public int QuantityOnHand => _lots.Sum(lot => lot.QuantityOnHand);
 
-        public Product(
-            string name,
-            string description,
-            decimal price,
-            string sku)
+        public Product(string name, string description, decimal price, string sku)
         {
             Validators.ValidateName(name);
             Validators.ValidateSku(sku);
@@ -53,13 +48,13 @@ namespace Inventory_Management_System.Api.Domain.Entities
             {
                 throw new ArgumentOutOfRangeException(
                     nameof(id),
-                    "Product ID must be greater than zero.");
+                    "Product ID must be greater than zero."
+                );
             }
 
             if (Id != 0)
             {
-                throw new InvalidOperationException(
-                    "The product already has an ID.");
+                throw new InvalidOperationException("The product already has an ID.");
             }
 
             Id = id;
@@ -76,15 +71,14 @@ namespace Inventory_Management_System.Api.Domain.Entities
             ArgumentNullException.ThrowIfNull(lot);
 
             bool lotNumberExists = _lots.Any(existingLot =>
-                existingLot.LotNumber.Equals(
-                    lot.LotNumber,
-                    StringComparison.OrdinalIgnoreCase));
+                existingLot.LotNumber.Equals(lot.LotNumber, StringComparison.OrdinalIgnoreCase)
+            );
 
             if (lotNumberExists)
             {
                 throw new InvalidOperationException(
-                    $"Lot '{lot.LotNumber}' already exists " +
-                    $"for product '{SKU}'.");
+                    $"Lot '{lot.LotNumber}' already exists " + $"for product '{SKU}'."
+                );
             }
 
             _lots.Add(lot);
@@ -94,25 +88,20 @@ namespace Inventory_Management_System.Api.Domain.Entities
         {
             if (string.IsNullOrWhiteSpace(lotNumber))
             {
-                throw new ArgumentException(
-                    "Lot number cannot be empty.",
-                    nameof(lotNumber));
+                throw new ArgumentException("Lot number cannot be empty.", nameof(lotNumber));
             }
 
             return _lots.FirstOrDefault(lot =>
-                lot.LotNumber.Equals(
-                    lotNumber,
-                    StringComparison.OrdinalIgnoreCase))
+                    lot.LotNumber.Equals(lotNumber, StringComparison.OrdinalIgnoreCase)
+                )
                 ?? throw new NotFoundException(
-                    $"Lot '{lotNumber}' was not found for product '{SKU}'.");
+                    $"Lot '{lotNumber}' was not found for product '{SKU}'."
+                );
         }
 
-        public InventoryLot ShipFromLot(
-            string lotNumber,
-            int quantity)
+        public InventoryLot ShipFromLot(string lotNumber, int quantity)
         {
-            InventoryLot lot =
-                GetLotByNumber(lotNumber);
+            InventoryLot lot = GetLotByNumber(lotNumber);
 
             lot.Ship(quantity);
 

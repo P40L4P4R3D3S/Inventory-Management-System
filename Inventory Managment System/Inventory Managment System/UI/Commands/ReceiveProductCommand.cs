@@ -1,8 +1,6 @@
 ﻿using System;
-
 using Inventory_Management_System.Api.Application.Ports.Inbound;
 using Inventory_Management_System.Api.Domain.Entities;
-
 using Inventory_Managment_System.UI.Input;
 using Inventory_Managment_System.UI.Presenters;
 
@@ -17,7 +15,8 @@ namespace Inventory_Managment_System.UI.Commands
         public ReceiveProductCommand(
             IInventoryService inventoryService,
             IConsoleInput consoleInput,
-            LotConsolePresenter lotPresenter)
+            LotConsolePresenter lotPresenter
+        )
         {
             _inventoryService = inventoryService;
             _consoleInput = consoleInput;
@@ -34,12 +33,13 @@ namespace Inventory_Managment_System.UI.Commands
             string supplier = _consoleInput.ReadRequiredString("Supplier: ");
 
             InventoryLot lot = _inventoryService.ReceiveProduct(
-                    sku,
-                    lotNumber,
-                    quantity,
-                    receivedDate,
-                    expirationDate,
-                    supplier);
+                sku,
+                lotNumber,
+                quantity,
+                receivedDate,
+                expirationDate,
+                supplier
+            );
 
             Console.WriteLine("Lot added successfully.");
 

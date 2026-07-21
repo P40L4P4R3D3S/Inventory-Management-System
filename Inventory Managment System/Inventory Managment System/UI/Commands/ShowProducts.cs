@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-
 using Inventory_Management_System.Api.Application.Ports.Inbound;
 using Inventory_Management_System.Api.Domain.Entities;
-
 using Inventory_Managment_System.UI.Enums;
 using Inventory_Managment_System.UI.Presenters;
 
@@ -16,25 +14,21 @@ namespace Inventory_Managment_System.UI.Commands
 
         public ShowProductsCommand(
             IInventoryService inventoryService,
-            ProductConsolePresenter productPresenter)
+            ProductConsolePresenter productPresenter
+        )
         {
-            _inventoryService = inventoryService
-                ?? throw new ArgumentNullException(
-                    nameof(inventoryService));
+            _inventoryService =
+                inventoryService ?? throw new ArgumentNullException(nameof(inventoryService));
 
-            _productPresenter = productPresenter
-                ?? throw new ArgumentNullException(
-                    nameof(productPresenter));
+            _productPresenter =
+                productPresenter ?? throw new ArgumentNullException(nameof(productPresenter));
         }
 
         public void Execute()
         {
-            IReadOnlyList<Product> products =
-                _inventoryService.GetAllProducts();
+            IReadOnlyList<Product> products = _inventoryService.GetAllProducts();
 
-            _productPresenter.ShowProductList(
-                products,
-                ProductDisplayMode.Summary);
+            _productPresenter.ShowProductList(products, ProductDisplayMode.Summary);
         }
     }
 }

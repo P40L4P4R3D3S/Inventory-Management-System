@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using Inventory_Management_System.Api.Domain.Entities;
-
 
 namespace Inventory_Managment_System.UI.Presenters
 {
@@ -13,38 +11,32 @@ namespace Inventory_Managment_System.UI.Presenters
         {
             ArgumentNullException.ThrowIfNull(lot);
 
-            string expirationDate =
-                lot.ExpirationDate?.ToString("dd-MM-yyyy")
-                ?? "N/A";
+            string expirationDate = lot.ExpirationDate?.ToString("dd-MM-yyyy") ?? "N/A";
 
             Console.WriteLine(
-                $"{lot.LotNumber} | " +
-                $"{lot.ReceivedDate:dd-MM-yyyy} | " +
-                $"{expirationDate} | " +
-                $"{lot.QuantityOnHand}");
+                $"{lot.LotNumber} | "
+                    + $"{lot.ReceivedDate:dd-MM-yyyy} | "
+                    + $"{expirationDate} | "
+                    + $"{lot.QuantityOnHand}"
+            );
         }
 
-        public bool ShowAvailableLots(
-            IReadOnlyList<InventoryLot> lots)
+        public bool ShowAvailableLots(IReadOnlyList<InventoryLot> lots)
         {
             ArgumentNullException.ThrowIfNull(lots);
 
-            IReadOnlyList<InventoryLot> availableLots =
-                lots
-                    .Where(lot => lot.QuantityOnHand > 0)
-                    .ToList();
+            IReadOnlyList<InventoryLot> availableLots = lots.Where(lot => lot.QuantityOnHand > 0)
+                .ToList();
 
             if (availableLots.Count == 0)
             {
-                Console.WriteLine(
-                    "There are no available lots.");
+                Console.WriteLine("There are no available lots.");
 
                 return false;
             }
 
             Console.WriteLine();
-            Console.WriteLine(
-                "Lot | Received | Expiration | Available");
+            Console.WriteLine("Lot | Received | Expiration | Available");
 
             foreach (InventoryLot lot in availableLots)
             {

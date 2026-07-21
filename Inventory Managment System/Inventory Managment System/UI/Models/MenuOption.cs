@@ -1,5 +1,4 @@
 ﻿using System;
-
 using Inventory_Managment_System.UI.Commands;
 
 namespace Inventory_Managment_System.UI.Models

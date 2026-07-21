@@ -10,6 +10,7 @@ namespace Inventory_Management_System.Api.Models.Responses
         public decimal Price { get; init; }
         public string SKU { get; init; } = string.Empty;
         public int QuantityOnHand { get; init; }
+
         public static ProductResponse FromDomain(Product product)
         {
             return new ProductResponse
@@ -19,8 +20,7 @@ namespace Inventory_Management_System.Api.Models.Responses
                 Description = product.Description,
                 Price = product.Price,
                 SKU = product.SKU,
-                QuantityOnHand =
-                    product.QuantityOnHand
+                QuantityOnHand = product.QuantityOnHand,
             };
         }
     }

@@ -42,8 +42,7 @@ namespace Inventory_Managment_System.UI.Input
                     return result;
                 }
 
-                Console.WriteLine(
-                    "The value must be a valid decimal number.");
+                Console.WriteLine("The value must be a valid decimal number.");
             }
         }
 
@@ -60,8 +59,7 @@ namespace Inventory_Managment_System.UI.Input
                     return result;
                 }
 
-                Console.WriteLine(
-                    "The value must be a valid integer.");
+                Console.WriteLine("The value must be a valid integer.");
             }
         }
 
@@ -78,18 +76,20 @@ namespace Inventory_Managment_System.UI.Input
                     return null;
                 }
 
-                if (DateTime.TryParseExact(
+                if (
+                    DateTime.TryParseExact(
                         input,
                         "dd-MM-yyyy",
                         CultureInfo.InvariantCulture,
                         DateTimeStyles.None,
-                        out DateTime result))
+                        out DateTime result
+                    )
+                )
                 {
                     return result.Date;
                 }
 
-                Console.WriteLine(
-                    "Invalid date. Please use the format DD-MM-YYYY.");
+                Console.WriteLine("Invalid date. Please use the format DD-MM-YYYY.");
             }
         }
     }

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-
 using Inventory_Management_System.Api.Application.Ports.Outbound;
 using Inventory_Management_System.Api.Domain.Entities;
 
@@ -11,9 +10,7 @@ namespace Inventory_Management_System.Api.Infrastructure.Persistence
 
         public ProductRepository(string filePath)
         {
-            _repository =
-                new JsonRepository<Product>(
-                    filePath);
+            _repository = new JsonRepository<Product>(filePath);
         }
 
         public IReadOnlyList<Product> GetAll()
@@ -21,8 +18,7 @@ namespace Inventory_Management_System.Api.Infrastructure.Persistence
             return _repository.GetAll();
         }
 
-        public void SaveAll(
-            IEnumerable<Product> products)
+        public void SaveAll(IEnumerable<Product> products)
         {
             _repository.SaveAll(products);
         }

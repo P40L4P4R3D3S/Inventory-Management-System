@@ -13,20 +13,14 @@ namespace Inventory_Management_System.Api.Infrastructure.Persistence
         private readonly JsonSerializerOptions _options = new()
         {
             WriteIndented = true,
-            Converters =
-            {
-                new JsonStringEnumConverter()
-            }
+            Converters = { new JsonStringEnumConverter() },
         };
-
 
         public JsonRepository(string filePath)
         {
             if (string.IsNullOrWhiteSpace(filePath))
             {
-                throw new ArgumentException(
-                    "File path cannot be empty.",
-                    nameof(filePath));
+                throw new ArgumentException("File path cannot be empty.", nameof(filePath));
             }
 
             _filePath = filePath;
@@ -38,64 +32,51 @@ namespace Inventory_Management_System.Api.Infrastructure.Persistence
         {
             try
             {
-                string json =
-                    File.ReadAllText(_filePath);
+                string json = File.ReadAllText(_filePath);
 
                 if (string.IsNullOrWhiteSpace(json))
                 {
                     return [];
                 }
 
-                return JsonSerializer.Deserialize<List<T>>(
-                           json,
-                           _options)
-                       ?? [];
+                return JsonSerializer.Deserialize<List<T>>(json, _options) ?? [];
             }
             catch (JsonException)
             {
-                Console.WriteLine(
-                    $"Invalid JSON in {_filePath}.");
+                Console.WriteLine($"Invalid JSON in {_filePath}.");
 
                 return [];
             }
             catch (IOException exception)
             {
-                Console.WriteLine(
-                    $"Could not read {_filePath}: " +
-                    exception.Message);
+                Console.WriteLine($"Could not read {_filePath}: " + exception.Message);
 
                 return [];
             }
         }
 
-        public void SaveAll(
-            IEnumerable<T> items)
+        public void SaveAll(IEnumerable<T> items)
         {
             ArgumentNullException.ThrowIfNull(items);
 
             try
             {
-                string json =
-                    JsonSerializer.Serialize(
-                        items,
-                        _options);
+                string json = JsonSerializer.Serialize(items, _options);
 
-                File.WriteAllText(
-                    _filePath,
-                    json);
+                File.WriteAllText(_filePath, json);
             }
             catch (IOException exception)
             {
                 throw new InvalidOperationException(
                     $"Could not save data in {_filePath}.",
-                    exception);
+                    exception
+                );
             }
         }
 
         private void EnsureFileExists()
         {
-            string? directory =
-                Path.GetDirectoryName(_filePath);
+            string? directory = Path.GetDirectoryName(_filePath);
 
             if (!string.IsNullOrWhiteSpace(directory))
             {
@@ -104,9 +85,7 @@ namespace Inventory_Management_System.Api.Infrastructure.Persistence
 
             if (!File.Exists(_filePath))
             {
-                File.WriteAllText(
-                    _filePath,
-                    "[]");
+                File.WriteAllText(_filePath, "[]");
             }
         }
     }
