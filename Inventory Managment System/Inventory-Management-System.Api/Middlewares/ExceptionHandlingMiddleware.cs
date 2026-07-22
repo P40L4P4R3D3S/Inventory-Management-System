@@ -50,6 +50,8 @@ namespace Inventory_Management_System.Api.Middlewares
 
                 UnauthorizedAccessException => HttpStatusCode.Unauthorized,
 
+                InventoryConflictException => HttpStatusCode.Conflict,
+
                 _ => HttpStatusCode.InternalServerError,
             };
 

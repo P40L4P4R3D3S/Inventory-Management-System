@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Inventory_Management_System.Api.Domain.Entities;
+using Inventory_Management_System.Api.Domain.Records;
 
 namespace Inventory_Management_System.Api.Application.Ports.Inbound
 {
@@ -26,7 +27,7 @@ namespace Inventory_Management_System.Api.Application.Ports.Inbound
             string supplier
         );
 
-        InventoryLot ShipProduct(string sku, string lotNumber, int quantity);
+        ShipProductResult ShipProduct(int productId, int quantity, int? lotId, string? notes);
 
         InventoryLot GetLot(string sku, string lotNumber);
 

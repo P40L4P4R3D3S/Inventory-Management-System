@@ -24,13 +24,17 @@ namespace Inventory_Management_System.Api.Domain.Entities
         [JsonInclude]
         public DateTime TransactionDate { get; private set; }
 
+        [JsonInclude]
+        public string Notes { get; private set; }
+
         public InventoryTransaction(
             int id,
             int productId,
             int lotId,
             TransactionType type,
             int quantity,
-            DateTime transactionDate
+            DateTime transactionDate,
+            string? notes = null
         )
         {
             Id = id;
@@ -39,6 +43,7 @@ namespace Inventory_Management_System.Api.Domain.Entities
             Type = type;
             Quantity = quantity;
             TransactionDate = transactionDate;
+            Notes = notes?.Trim() ?? string.Empty;
         }
     }
 }

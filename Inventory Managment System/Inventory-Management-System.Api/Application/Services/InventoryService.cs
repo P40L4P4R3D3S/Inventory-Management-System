@@ -6,6 +6,7 @@ using Inventory_Management_System.Api.Application.Ports.Outbound;
 using Inventory_Management_System.Api.Domain.Entities;
 using Inventory_Management_System.Api.Domain.Enums;
 using Inventory_Management_System.Api.Domain.Exceptions;
+using Inventory_Management_System.Api.Domain.Records;
 using Inventory_Management_System.Api.Domain.Validation;
 
 namespace Inventory_Management_System.Api.Application.Services
@@ -21,6 +22,8 @@ namespace Inventory_Management_System.Api.Application.Services
         private int _nextProductId;
         private int _nextLotId;
         private int _nextTransactionId;
+
+        private sealed record LotAllocation(InventoryLot Lot, int Quantity);
 
         public InventoryService(
             IProductRepository productRepository,
@@ -275,27 +278,139 @@ namespace Inventory_Management_System.Api.Application.Services
             return _products.FirstOrDefault(condition) ?? throw new NotFoundException(errorMessage);
         }
 
-        public InventoryLot ShipProduct(string sku, string lotNumber, int quantity)
+        public ShipProductResult ShipProduct(int productId, int quantity, int? lotId, string? notes)
         {
-            Product product = GetProductBySku(sku);
+            Validators.ValidatePositiveQuantity(quantity);
 
-            InventoryLot lot = product.ShipFromLot(lotNumber, quantity);
+            Product product = GetProductById(productId);
 
-            InventoryTransaction transaction = new(
-                _nextTransactionId++,
-                product.Id,
-                lot.Id,
-                TransactionType.Ship,
-                quantity,
-                DateTime.Now
-            );
+            List<LotAllocation> allocations = lotId.HasValue
+                ? CreateSpecificLotAllocation(product, lotId.Value, quantity)
+                : CreateAutomaticAllocations(product, quantity);
 
-            _transactions.Add(transaction);
+            List<ShipmentTransactionResult> results = [];
+
+            string normalizedNotes = notes?.Trim() ?? string.Empty;
+
+            foreach (LotAllocation allocation in allocations)
+            {
+                allocation.Lot.Ship(allocation.Quantity);
+
+                InventoryTransaction transaction = new(
+                    _nextTransactionId++,
+                    product.Id,
+                    allocation.Lot.Id,
+                    TransactionType.Ship,
+                    allocation.Quantity,
+                    DateTime.UtcNow,
+                    normalizedNotes
+                );
+
+                _transactions.Add(transaction);
+
+                results.Add(
+                    new ShipmentTransactionResult(
+                        transaction.Id,
+                        allocation.Lot.Id,
+                        allocation.Lot.LotNumber,
+                        allocation.Quantity,
+                        allocation.Lot.ExpirationDate,
+                        allocation.Lot.ReceivedDate
+                    )
+                );
+            }
 
             _productRepository.SaveAll(_products);
             _transactionRepository.SaveAll(_transactions);
 
-            return lot;
+            return new ShipProductResult(product.Id, quantity, results);
+        }
+
+        private static List<LotAllocation> CreateSpecificLotAllocation(
+            Product product,
+            int lotId,
+            int quantity
+        )
+        {
+            InventoryLot lot =
+                product.Lots.FirstOrDefault(existingLot => existingLot.Id == lotId)
+                ?? throw new NotFoundException(
+                    $"Lot with ID '{lotId}' was not found " + $"for product '{product.Id}'."
+                );
+
+            ValidateLotForShipment(lot);
+
+            if (lot.QuantityOnHand < quantity)
+            {
+                throw new InventoryConflictException(
+                    $"Lot '{lot.LotNumber}' contains only "
+                        + $"{lot.QuantityOnHand} available units."
+                );
+            }
+
+            return [new LotAllocation(lot, quantity)];
+        }
+
+        private static List<LotAllocation> CreateAutomaticAllocations(
+            Product product,
+            int requestedQuantity
+        )
+        {
+            List<InventoryLot> eligibleLots = product
+                .Lots.Where(lot => !lot.IsExpired && !lot.IsEmpty)
+                .OrderBy(lot => lot.ExpirationDate.HasValue ? 0 : 1)
+                .ThenBy(lot => lot.ExpirationDate ?? DateTime.MaxValue)
+                .ThenBy(lot => lot.ReceivedDate)
+                .ThenBy(lot => lot.Id)
+                .ToList();
+
+            int totalEligibleQuantity = eligibleLots.Sum(lot => lot.QuantityOnHand);
+
+            if (totalEligibleQuantity < requestedQuantity)
+            {
+                throw new InventoryConflictException(
+                    $"Insufficient eligible inventory. "
+                        + $"Requested: {requestedQuantity}. "
+                        + $"Available: {totalEligibleQuantity}."
+                );
+            }
+
+            List<LotAllocation> allocations = [];
+
+            int remainingQuantity = requestedQuantity;
+
+            foreach (InventoryLot lot in eligibleLots)
+            {
+                int quantityFromLot = Math.Min(remainingQuantity, lot.QuantityOnHand);
+
+                allocations.Add(new LotAllocation(lot, quantityFromLot));
+
+                remainingQuantity -= quantityFromLot;
+
+                if (remainingQuantity == 0)
+                {
+                    break;
+                }
+            }
+
+            return allocations;
+        }
+
+        private static void ValidateLotForShipment(InventoryLot lot)
+        {
+            if (lot.IsExpired)
+            {
+                throw new InventoryConflictException(
+                    $"Lot '{lot.LotNumber}' is expired " + "and cannot be shipped."
+                );
+            }
+
+            if (lot.IsEmpty)
+            {
+                throw new InventoryConflictException(
+                    $"Lot '{lot.LotNumber}' is depleted " + "and cannot be shipped."
+                );
+            }
         }
     }
 }
