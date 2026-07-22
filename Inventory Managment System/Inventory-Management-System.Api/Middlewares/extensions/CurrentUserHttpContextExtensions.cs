@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.AspNetCore.Http;
 
-namespace Inventory_Management_System.Api.Middlewares
+namespace Inventory_Management_System.Api.Middlewares.extensions
 {
     public static class CurrentUserHttpContextExtensions
     {

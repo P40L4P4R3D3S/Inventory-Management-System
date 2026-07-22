@@ -3,6 +3,7 @@ using System.Linq;
 using Inventory_Management_System.Api.Application.Ports.Inbound;
 using Inventory_Management_System.Api.Domain.Entities;
 using Inventory_Management_System.Api.Middlewares;
+using Inventory_Management_System.Api.Middlewares.extensions;
 using Inventory_Management_System.Api.Models.Requests;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

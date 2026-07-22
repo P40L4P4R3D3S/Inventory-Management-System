@@ -1,4 +1,8 @@
-.vs
+.vs/
 **/bin/
 **/obj/
 **/Data/
+
+# Configuration files
+**/appsettings.json
+**/appsettings.Development.json

@@ -61,6 +61,28 @@ namespace Inventory_Management_System.Api.Domain.Entities
             Supplier = supplier?.Trim() ?? string.Empty;
         }
 
+        [JsonConstructor]
+        private InventoryLot(
+            int id,
+            string lotNumber,
+            DateTime receivedDate,
+            DateTime? expirationDate,
+            decimal unitCost,
+            int initialQuantity,
+            int quantityOnHand,
+            string supplier
+        )
+        {
+            Id = id;
+            LotNumber = lotNumber;
+            ReceivedDate = receivedDate;
+            ExpirationDate = expirationDate;
+            UnitCost = unitCost;
+            InitialQuantity = initialQuantity;
+            QuantityOnHand = quantityOnHand;
+            Supplier = supplier;
+        }
+
         public void AssignId(int id)
         {
             if (id <= 0)

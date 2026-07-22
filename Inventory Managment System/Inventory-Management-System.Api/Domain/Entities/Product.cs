@@ -9,8 +9,6 @@ namespace Inventory_Management_System.Api.Domain.Entities
 {
     public class Product
     {
-        private readonly List<InventoryLot> _lots = [];
-
         [JsonInclude]
         public int Id { get; private set; }
 
@@ -26,9 +24,15 @@ namespace Inventory_Management_System.Api.Domain.Entities
         [JsonInclude]
         public string SKU { get; private set; }
 
-        public IReadOnlyList<InventoryLot> Lots => _lots.AsReadOnly();
+        [JsonInclude]
+        [JsonPropertyName("Lots")]
+        private List<InventoryLot> StoredLots { get; set; } = [];
 
-        public int QuantityOnHand => _lots.Sum(lot => lot.QuantityOnHand);
+        [JsonIgnore]
+        public IReadOnlyList<InventoryLot> Lots => StoredLots.AsReadOnly();
+
+        [JsonIgnore]
+        public int QuantityOnHand => StoredLots.Sum(lot => lot.QuantityOnHand);
 
         public Product(string name, string description, decimal price, string sku)
         {
@@ -63,6 +67,7 @@ namespace Inventory_Management_System.Api.Domain.Entities
         public void UpdatePrice(decimal price)
         {
             Validators.ValidatePrice(price);
+
             Price = price;
         }
 
@@ -70,6 +75,8 @@ namespace Inventory_Management_System.Api.Domain.Entities
         {
             if (!string.IsNullOrWhiteSpace(name))
             {
+                Validators.ValidateName(name);
+
                 Name = name.Trim();
             }
         }
@@ -86,7 +93,7 @@ namespace Inventory_Management_System.Api.Domain.Entities
         {
             ArgumentNullException.ThrowIfNull(lot);
 
-            bool lotNumberExists = _lots.Any(existingLot =>
+            bool lotNumberExists = StoredLots.Any(existingLot =>
                 existingLot.LotNumber.Equals(lot.LotNumber, StringComparison.OrdinalIgnoreCase)
             );
 
@@ -97,7 +104,7 @@ namespace Inventory_Management_System.Api.Domain.Entities
                 );
             }
 
-            _lots.Add(lot);
+            StoredLots.Add(lot);
         }
 
         public InventoryLot GetLotByNumber(string lotNumber)
@@ -107,11 +114,13 @@ namespace Inventory_Management_System.Api.Domain.Entities
                 throw new ArgumentException("Lot number cannot be empty.", nameof(lotNumber));
             }
 
-            return _lots.FirstOrDefault(lot =>
-                    lot.LotNumber.Equals(lotNumber, StringComparison.OrdinalIgnoreCase)
+            string normalizedLotNumber = lotNumber.Trim();
+
+            return StoredLots.FirstOrDefault(lot =>
+                    lot.LotNumber.Equals(normalizedLotNumber, StringComparison.OrdinalIgnoreCase)
                 )
                 ?? throw new NotFoundException(
-                    $"Lot '{lotNumber}' was not found for product '{SKU}'."
+                    $"Lot '{normalizedLotNumber}' was not found " + $"for product '{SKU}'."
                 );
         }
 
