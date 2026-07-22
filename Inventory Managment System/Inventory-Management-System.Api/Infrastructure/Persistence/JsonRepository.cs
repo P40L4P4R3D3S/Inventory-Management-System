@@ -10,11 +10,7 @@ namespace Inventory_Management_System.Api.Infrastructure.Persistence
     {
         private readonly string _filePath;
 
-        private readonly JsonSerializerOptions _options = new()
-        {
-            WriteIndented = true,
-            Converters = { new JsonStringEnumConverter() },
-        };
+        private readonly JsonSerializerOptions _options = new() { WriteIndented = true };
 
         public JsonRepository(string filePath)
         {

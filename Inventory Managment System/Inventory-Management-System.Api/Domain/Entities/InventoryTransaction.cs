@@ -1,15 +1,27 @@
 ﻿using System;
+using System.Text.Json.Serialization;
 using Inventory_Management_System.Api.Domain.Enums;
 
 namespace Inventory_Management_System.Api.Domain.Entities
 {
     public class InventoryTransaction
     {
+        [JsonInclude]
         public int Id { get; private set; }
+
+        [JsonInclude]
         public int ProductId { get; private set; }
+
+        [JsonInclude]
         public int LotId { get; private set; }
+
+        [JsonInclude]
         public TransactionType Type { get; private set; }
+
+        [JsonInclude]
         public int Quantity { get; private set; }
+
+        [JsonInclude]
         public DateTime TransactionDate { get; private set; }
 
         public InventoryTransaction(
