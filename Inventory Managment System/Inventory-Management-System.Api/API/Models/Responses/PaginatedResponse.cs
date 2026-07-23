@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Inventory_Management_System.Api.Models.Responses
+namespace Inventory_Management_System.Api.API.Models.Responses
 {
     public class PaginatedResponse<T>
     {

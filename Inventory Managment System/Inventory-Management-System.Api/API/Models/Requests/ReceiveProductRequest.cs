@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace Inventory_Management_System.Api.Models.Requests
+namespace Inventory_Management_System.Api.API.Models.Requests
 {
     public class ReceiveProductRequest
     {

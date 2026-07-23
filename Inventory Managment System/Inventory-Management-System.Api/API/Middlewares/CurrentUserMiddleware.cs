@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Inventory_Management_System.Api.Domain.Enums;
 using Microsoft.AspNetCore.Http;
 
-namespace Inventory_Management_System.Api.Middlewares
+namespace Inventory_Management_System.Api.API.Middlewares
 {
     public class CurrentUserMiddleware
     {

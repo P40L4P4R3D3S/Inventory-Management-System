@@ -1,14 +1,14 @@
-﻿using Inventory_Management_System.Api.Application.Ports.Inbound;
+﻿using Inventory_Management_System.Api.API.Models.Requests;
+using Inventory_Management_System.Api.API.Models.Responses;
+using Inventory_Management_System.Api.Application.Ports.Inbound;
 using Inventory_Management_System.Api.Domain.Entities;
 using Inventory_Management_System.Api.Domain.Records;
 using Inventory_Management_System.Api.Infrastructure.Auth;
-using Inventory_Management_System.Api.Models.Requests;
-using Inventory_Management_System.Api.Models.Responses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Inventory_Management_System.Api.Controllers
+namespace Inventory_Management_System.Api.API.Controllers
 {
     [Route("api/inventory")]
     [ApiController]
@@ -21,7 +21,7 @@ namespace Inventory_Management_System.Api.Controllers
             _inventoryService = inventoryService;
         }
 
-        [Authorize(Roles = AppRoles.Management)]
+        [Authorize(Roles = AppRoles.InventoryOperators)]
         [HttpPost("receive")]
         [ProducesResponseType(typeof(ReceiveProductResponse), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -50,7 +50,7 @@ namespace Inventory_Management_System.Api.Controllers
             );
         }
 
-        [Authorize]
+        [Authorize(Roles = AppRoles.InventoryOperators)]
         [HttpGet("{sku}/lots/{lotNumber}")]
         [ProducesResponseType(typeof(InventoryLotResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -61,7 +61,7 @@ namespace Inventory_Management_System.Api.Controllers
             return Ok(InventoryLotResponse.FromDomain(lot));
         }
 
-        [Authorize(Roles = AppRoles.Management)]
+        [Authorize(Roles = AppRoles.InventoryOperators)]
         [HttpPost("ship")]
         [ProducesResponseType(typeof(ShipProductResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

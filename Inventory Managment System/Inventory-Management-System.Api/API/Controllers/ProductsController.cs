@@ -1,15 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Inventory_Management_System.Api.API.Models.Requests;
+using Inventory_Management_System.Api.API.Models.Responses;
 using Inventory_Management_System.Api.Application.Ports.Inbound;
 using Inventory_Management_System.Api.Domain.Entities;
 using Inventory_Management_System.Api.Domain.Exceptions;
-using Inventory_Management_System.Api.Models.Requests;
-using Inventory_Management_System.Api.Models.Responses;
+using Inventory_Management_System.Api.Infrastructure.Auth;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Inventory_Management_System.Api.Controllers
+namespace Inventory_Management_System.Api.API.Controllers
 {
     [ApiController]
     [Route("api/products")]
@@ -23,6 +25,7 @@ namespace Inventory_Management_System.Api.Controllers
                 inventoryService ?? throw new ArgumentNullException(nameof(inventoryService));
         }
 
+        [Authorize]
         [HttpGet]
         [ProducesResponseType(typeof(PaginatedResponse<ProductResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -60,6 +63,7 @@ namespace Inventory_Management_System.Api.Controllers
             }
         }
 
+        [Authorize]
         [HttpGet("{id:int}")]
         [ProducesResponseType(typeof(ProductResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -82,6 +86,7 @@ namespace Inventory_Management_System.Api.Controllers
             }
         }
 
+        [Authorize(Roles = AppRoles.InventoryOperators)]
         [HttpPost]
         [ProducesResponseType(typeof(ProductResponse), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -113,6 +118,7 @@ namespace Inventory_Management_System.Api.Controllers
             }
         }
 
+        [Authorize(Roles = AppRoles.Management)]
         [HttpPut("{id:int}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -140,6 +146,7 @@ namespace Inventory_Management_System.Api.Controllers
             }
         }
 
+        [Authorize(Roles = AppRoles.Management)]
         [HttpDelete("{id:int}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

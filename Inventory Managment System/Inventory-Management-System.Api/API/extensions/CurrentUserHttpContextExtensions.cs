@@ -1,7 +1,8 @@
 ﻿using System;
+using Inventory_Management_System.Api.API.Middlewares;
 using Microsoft.AspNetCore.Http;
 
-namespace Inventory_Management_System.Api.Middlewares.extensions
+namespace Inventory_Management_System.Api.API.extensions
 {
     public static class CurrentUserHttpContextExtensions
     {

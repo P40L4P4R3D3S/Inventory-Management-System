@@ -3,7 +3,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
-namespace Inventory_Management_System.Api.Middlewares
+namespace Inventory_Management_System.Api.API.Middlewares
 {
     public class AuthorizationResponseMiddleware
     {

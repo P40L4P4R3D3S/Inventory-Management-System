@@ -1,14 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Inventory_Management_System.Api.API.extensions;
+using Inventory_Management_System.Api.API.Middlewares;
+using Inventory_Management_System.Api.API.Models.Requests;
 using Inventory_Management_System.Api.Application.Ports.Inbound;
 using Inventory_Management_System.Api.Domain.Entities;
-using Inventory_Management_System.Api.Middlewares;
-using Inventory_Management_System.Api.Middlewares.extensions;
-using Inventory_Management_System.Api.Models.Requests;
+using Inventory_Management_System.Api.Infrastructure.Auth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Inventory_Management_System.Api.Controllers
+namespace Inventory_Management_System.Api.API.Controllers
 {
     [ApiController]
     [Route("api/users")]
@@ -102,7 +103,7 @@ namespace Inventory_Management_System.Api.Controllers
             return Ok(response);
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = AppRoles.Administrators)]
         [HttpPatch("{id:int}/role")]
         public ActionResult<UserResponse> UpdateRole(int id, UpdateUserRoleRequest request)
         {

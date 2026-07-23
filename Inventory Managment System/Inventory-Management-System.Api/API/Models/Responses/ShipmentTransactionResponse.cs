@@ -1,7 +1,7 @@
 ﻿using System;
 using Inventory_Management_System.Api.Domain.Records;
 
-namespace Inventory_Management_System.Api.Models.Responses
+namespace Inventory_Management_System.Api.API.Models.Responses
 {
     public class ShipmentTransactionResponse
     {

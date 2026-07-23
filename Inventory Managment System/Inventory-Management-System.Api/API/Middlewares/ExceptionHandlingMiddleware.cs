@@ -6,7 +6,7 @@ using Inventory_Management_System.Api.Domain.Exceptions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
-namespace Inventory_Management_System.Api.Middlewares
+namespace Inventory_Management_System.Api.API.Middlewares
 {
     public class ExceptionHandlingMiddleware
     {
