@@ -11,7 +11,6 @@ namespace Inventory_Management_System.Api.API.Middlewares
     public class ExceptionHandlingMiddleware
     {
         private readonly RequestDelegate _next;
-
         private readonly ILogger<ExceptionHandlingMiddleware> _logger;
 
         public ExceptionHandlingMiddleware(
@@ -32,17 +31,65 @@ namespace Inventory_Management_System.Api.API.Middlewares
             }
             catch (Exception exception)
             {
+                if (context.Response.HasStarted)
+                {
+                    _logger.LogError(exception, "The response had already started.");
+
+                    throw;
+                }
+
                 await HandleExceptionAsync(context, exception);
             }
         }
 
         private async Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
-            HttpStatusCode statusCode = exception switch
+            HttpStatusCode statusCode = GetStatusCode(exception);
+
+            if (statusCode == HttpStatusCode.InternalServerError)
+            {
+                _logger.LogError(exception, "An unexpected server error occurred.");
+            }
+            else
+            {
+                _logger.LogWarning(
+                    exception,
+                    "Request failed with status code {StatusCode}.",
+                    (int)statusCode
+                );
+            }
+
+            context.Response.Clear();
+
+            context.Response.StatusCode = (int)statusCode;
+
+            context.Response.ContentType = "application/json";
+
+            ErrorResponse response = new()
+            {
+                Status = (int)statusCode,
+                Message =
+                    statusCode == HttpStatusCode.InternalServerError
+                        ? "An unexpected server error occurred."
+                        : exception.Message,
+            };
+
+            string json = JsonSerializer.Serialize(response);
+
+            await context.Response.WriteAsync(json);
+        }
+
+        private static HttpStatusCode GetStatusCode(Exception exception)
+        {
+            return exception switch
             {
                 NotFoundException => HttpStatusCode.NotFound,
 
                 DuplicateException => HttpStatusCode.Conflict,
+
+                InventoryConflictException => HttpStatusCode.Conflict,
+
+                LessInventoryException => HttpStatusCode.Conflict,
 
                 ArgumentException => HttpStatusCode.BadRequest,
 
@@ -50,31 +97,15 @@ namespace Inventory_Management_System.Api.API.Middlewares
 
                 UnauthorizedAccessException => HttpStatusCode.Unauthorized,
 
-                InventoryConflictException => HttpStatusCode.Conflict,
-
                 _ => HttpStatusCode.InternalServerError,
             };
+        }
 
-            if (statusCode == HttpStatusCode.InternalServerError)
-            {
-                _logger.LogError(exception, "An unexpected error occurred.");
-            }
+        private sealed class ErrorResponse
+        {
+            public int Status { get; init; }
 
-            object response = new
-            {
-                status = (int)statusCode,
-                message = statusCode == HttpStatusCode.InternalServerError
-                    ? "An unexpected server error occurred."
-                    : exception.Message,
-            };
-
-            context.Response.StatusCode = (int)statusCode;
-
-            context.Response.ContentType = "application/json";
-
-            string json = JsonSerializer.Serialize(response);
-
-            await context.Response.WriteAsync(json);
+            public string Message { get; init; } = string.Empty;
         }
     }
 }
